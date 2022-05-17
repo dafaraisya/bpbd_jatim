@@ -1,3 +1,4 @@
+import 'package:bpbd_jatim/components/label.dart';
 import 'package:flutter/material.dart';
 
 class UserCard extends StatelessWidget {
@@ -34,23 +35,8 @@ class UserCard extends StatelessWidget {
                     style: Theme.of(context).textTheme.headline6?.copyWith(
                         color: Theme.of(context).colorScheme.surface),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 18.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(32),
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    child: Center(
-                      child: Text(
-                        role,
-                        style: Theme.of(context).textTheme.headline6?.copyWith(
-                              color: Theme.of(context).colorScheme.background,
-                              fontSize: 16,
-                            ),
-                      ),
-                    ),
-                    // color: Theme.of(context).colorScheme.primary,
-                    height: 32,
+                  Label(
+                    text: role,
                   )
                 ],
               ),

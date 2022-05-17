@@ -277,7 +277,7 @@ class _SignUpState extends State<SignUp> {
                 },
                 child: Positioned.fill(
                   child: SvgPicture.asset(
-                    "assets/icons/back_arrow_black.svg", 
+                    "assets/icons/back_black.svg", 
                     alignment: Alignment.topLeft
                   ),
                 ),

@@ -16,7 +16,7 @@ class AccountData extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Column(children: [
               Container(
                 margin:
