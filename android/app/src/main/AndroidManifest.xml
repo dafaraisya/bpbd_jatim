@@ -4,6 +4,8 @@
         android:label="bpbd_jatim"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <meta-data android:name="com.google.android.geo.API_KEY"
+               android:value="AIzaSyDoU8ZF-6DaftjMk-AgToya1wTMge04tMc"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
