@@ -1,3 +1,4 @@
+import 'package:bpbd_jatim/screens/admin/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -83,6 +84,15 @@ class _DashboardState extends State<Dashboard> {
         ),
       );
 
+  Widget _getScreen(index) {
+    if (index == 1) {
+      return AppData();
+    } else if (index == 2) {
+      return AppData();
+    }
+    return AppData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
@@ -92,6 +102,7 @@ class _DashboardState extends State<Dashboard> {
         hoverColor: Colors.transparent,
       ),
       child: Scaffold(
+        body: Container(child: _getScreen(_selectedIndex)),
         bottomNavigationBar: BottomNavigationBar(
           showSelectedLabels: false,
           showUnselectedLabels: false,
