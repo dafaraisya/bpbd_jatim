@@ -16,7 +16,7 @@ class AccountData extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.background,
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0),
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: Column(children: [
               Container(
                 margin:
@@ -54,8 +54,9 @@ class AccountData extends StatelessWidget {
                     child: Center(
                       child: Text(
                         "Download Data",
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            color: Theme.of(context).colorScheme.surface),
+                        style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                            fontSize: 12),
                       ),
                     ),
                   ),
