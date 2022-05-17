@@ -6,7 +6,7 @@ class SignIn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController nameController = TextEditingController();
+    TextEditingController emailController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -24,31 +24,31 @@ class SignIn extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      'Login',
-                      style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).colorScheme.primary)
-                    )),
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    'Login',
+                    style: Theme.of(context).textTheme.headline4?.copyWith(color: Theme.of(context).colorScheme.primary)
+                  )),
                 Container(
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      'Please sign in to continue',
-                      style: Theme.of(context).textTheme.headline6?.copyWith(color: Theme.of(context).colorScheme.surface)
-                    )),
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    'Please sign in to continue',
+                    style: Theme.of(context).textTheme.headline6?.copyWith(color: Theme.of(context).colorScheme.surface)
+                  )),
                 Container(
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      'Email',
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary),
-                    )),
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    'Email',
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                  )),
                 Container(
                   padding: const EdgeInsets.all(10),
                   child: TextField(
                     style: TextStyle(color: Theme.of(context).colorScheme.secondary),
-                    controller: nameController,
+                    controller: emailController,
                     decoration: InputDecoration(
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8.0),
@@ -58,12 +58,12 @@ class SignIn extends StatelessWidget {
                   ),
                 ),
                 Container(
-                    alignment: Alignment.topLeft,
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      'Password',
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary),
-                    )),
+                  alignment: Alignment.topLeft,
+                  padding: const EdgeInsets.all(10),
+                  child: Text(
+                    'Password',
+                    style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary),
+                  )),
                 Container(
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   child: TextField(
@@ -88,9 +88,9 @@ class SignIn extends StatelessWidget {
                   ),
                 ),
                 Container(
-                    height: 50,
-                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                    child: Button(press: () => {}, text: 'Login',)
+                  height: 50,
+                  padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                  child: Button(press: () => {}, text: 'Login',)
                 ),
                 Row(
                   children: <Widget>[
