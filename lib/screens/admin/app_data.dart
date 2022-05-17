@@ -2,8 +2,8 @@ import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/components/app_grid.dart';
 import 'package:flutter/material.dart';
 
-class DisasterData extends StatelessWidget {
-  const DisasterData({Key? key}) : super(key: key);
+class AppData extends StatelessWidget {
+  const AppData({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class DisasterData extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
           child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
