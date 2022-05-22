@@ -1,5 +1,6 @@
 import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class Home extends StatelessWidget {
   const Home({Key? key}) : super(key: key);
@@ -9,7 +10,7 @@ class Home extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,6 +46,7 @@ class Home extends StatelessWidget {
                 height: 241,
                 width: double.infinity,
                 color: Colors.black,
+                child: const MapView(),
               ),
               const SizedBox(height: 30),
               Row(
@@ -98,7 +100,7 @@ class Home extends StatelessWidget {
                       const Expanded(
                         child: TabBarView(
                           children: [
-                            Center(),
+                            Dummy(),
                             Center(),
                             Center(),
                             Center(),
@@ -118,6 +120,34 @@ class Home extends StatelessWidget {
   }
 }
 
+class MapView extends StatefulWidget {
+  const MapView({Key? key}) : super(key: key);
+
+  @override
+  State<MapView> createState() => _MapViewState();
+}
+
+class _MapViewState extends State<MapView> {
+  late GoogleMapController mapController;
+
+  final LatLng _center = const LatLng(45.521563, -122.677433);
+
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GoogleMap(
+      onMapCreated: _onMapCreated,
+      initialCameraPosition: CameraPosition(
+        target: _center,
+        zoom: 11.0,
+      ),
+    );
+  }
+}
+
 class Dummy extends StatelessWidget {
   const Dummy({Key? key}) : super(key: key);
 
@@ -128,6 +158,8 @@ class Dummy extends StatelessWidget {
           maxCrossAxisExtent: 200,
           childAspectRatio: 1 / 1.1,
         ),
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
         itemCount: 5,
         itemBuilder: (BuildContext ctx, index) {
           return AppCard(

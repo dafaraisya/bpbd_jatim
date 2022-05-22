@@ -55,8 +55,7 @@ class AccountData extends StatelessWidget {
                       child: Text(
                         "Download Data",
                         style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                            color: Theme.of(context).colorScheme.surface,
-                            fontSize: 12),
+                            color: Theme.of(context).colorScheme.surface),
                       ),
                     ),
                   ),
