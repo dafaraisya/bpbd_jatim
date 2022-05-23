@@ -1,1 +1,1 @@
-enum PaymentList { LinkAja, Ovo, Dana, Mandiri, BCA, BRI }
+enum PaymentList { LinkAja, Ovo, Gopay, Mandiri, BCA, BRI }
