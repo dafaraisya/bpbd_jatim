@@ -22,7 +22,7 @@ class AppData extends StatelessWidget {
               margin: const EdgeInsets.symmetric(vertical: 10.0),
               child: Text(
                 "Data Aplikasi",
-                style: Theme.of(context).textTheme.headline4?.copyWith(
+                style: Theme.of(context).textTheme.headline5?.copyWith(
                       color: Theme.of(context).colorScheme.surface,
                     ),
               ),
