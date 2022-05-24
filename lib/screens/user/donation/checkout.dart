@@ -36,7 +36,7 @@ class _CheckoutState extends State<Checkout> {
                 ],
               ),
               Container(
-                margin: EdgeInsets.symmetric(vertical: 64.0),
+                margin: const EdgeInsets.symmetric(vertical: 64.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

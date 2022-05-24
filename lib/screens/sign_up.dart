@@ -1,5 +1,6 @@
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/screens/sign_in.dart';
+import 'package:bpbd_jatim/screens/sign_up_verified.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -185,9 +186,7 @@ class _SignUpState extends State<SignUp> {
           padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
           child: Button(
             press: () => { 
-              setState(() {
-                formBody = secondForm();
-              })
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const SignUpVerified()))
             },
             text: 'Register',
           )

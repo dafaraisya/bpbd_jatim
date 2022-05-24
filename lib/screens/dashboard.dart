@@ -47,9 +47,9 @@ class _DashboardState extends State<Dashboard> {
         break;
       case 2:
         if (_selectedIndex == index) {
-          icon = "assets/icons/home_orange.svg";
+          icon = "assets/icons/profile_orange.svg";
         } else {
-          icon = "assets/icons/home_white.svg";
+          icon = "assets/icons/profile_white.svg";
         }
         break;
       default:
@@ -58,7 +58,7 @@ class _DashboardState extends State<Dashboard> {
     return icon;
   }
 
-  Widget _buildIcon(IconData iconData, String text, int index) => SizedBox(
+  Widget _buildIcon(String text, int index) => SizedBox(
         width: double.infinity,
         height: 50,
         child: Padding(
@@ -112,11 +112,11 @@ class _DashboardState extends State<Dashboard> {
           backgroundColor: Theme.of(context).colorScheme.primary,
           items: <BottomNavigationBarItem>[
             BottomNavigationBarItem(
-                icon: _buildIcon(Icons.home, 'Data', 0), label: ''),
+                icon: _buildIcon('Data', 0), label: ''),
             BottomNavigationBarItem(
-                icon: _buildIcon(Icons.home, 'Home', 1), label: ''),
+                icon: _buildIcon('Home', 1), label: ''),
             BottomNavigationBarItem(
-                icon: _buildIcon(Icons.home, 'Profile', 2), label: ''),
+                icon: _buildIcon('Profile', 2), label: ''),
           ],
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/screens/dashboard.dart';
-import 'package:bpbd_jatim/screens/home.dart';
 import 'package:bpbd_jatim/screens/sign_up.dart';
 import 'package:flutter/material.dart';
 
