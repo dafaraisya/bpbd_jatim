@@ -1,4 +1,6 @@
 import 'package:bpbd_jatim/screens/admin/app_data.dart';
+import 'package:bpbd_jatim/screens/home.dart';
+import 'package:bpbd_jatim/screens/profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -86,11 +88,11 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _getScreen(index) {
     if (index == 1) {
-      return AppData();
+      return const Home();
     } else if (index == 2) {
-      return AppData();
+      return const Profile();
     }
-    return AppData();
+    return const AppData();
   }
 
   @override

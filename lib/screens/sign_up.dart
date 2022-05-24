@@ -1,4 +1,5 @@
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/screens/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -252,7 +253,8 @@ class _SignUpState extends State<SignUp> {
                                             .colorScheme
                                             .primary)),
                             onPressed: () {
-                              //signup screen
+                              //signin screen
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => const SignIn()));
                             },
                           )
                         ],
