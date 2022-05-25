@@ -1,7 +1,4 @@
-import 'package:bpbd_jatim/screens/admin/resource_data.dart';
-import 'package:bpbd_jatim/screens/home.dart';
 import 'package:bpbd_jatim/screens/sign_in.dart';
-import 'package:bpbd_jatim/screens/user/donation/donation_dashboard.dart';
 import 'package:bpbd_jatim/themes/app_theme.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
-      home: const DonationDashboard(),
+      home: const SignIn(),
     );
   }
 }

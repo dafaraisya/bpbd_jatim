@@ -1,4 +1,5 @@
 import 'package:bpbd_jatim/components/app_card.dart';
+import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -130,7 +131,7 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
   late GoogleMapController mapController;
 
-  final LatLng _center = const LatLng(45.521563, -122.677433);
+  final LatLng _center = const LatLng(-7.256673058845434, 112.75218079053529);
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -142,7 +143,7 @@ class _MapViewState extends State<MapView> {
       onMapCreated: _onMapCreated,
       initialCameraPosition: CameraPosition(
         target: _center,
-        zoom: 11.0,
+        zoom: 12.0,
       ),
     );
   }
@@ -167,7 +168,9 @@ class Dummy extends StatelessWidget {
             imageUrl: 'https://picsum.photos/200/300',
             street: 'Jl. Semarang surabaya',
             date: '20 Mei 2021',
-            onTap: () {},
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisaster()));
+            },
           );
         });
   }
