@@ -1,4 +1,6 @@
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/screens/dashboard.dart';
+import 'package:bpbd_jatim/screens/sign_up.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatelessWidget {
@@ -90,7 +92,9 @@ class SignIn extends StatelessWidget {
                 Container(
                   height: 50,
                   padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-                  child: Button(press: () => {}, text: 'Login',)
+                  child: Button(press: () => {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()))
+                  }, text: 'Login',)
                 ),
                 Row(
                   children: <Widget>[
@@ -102,6 +106,7 @@ class SignIn extends StatelessWidget {
                       ),
                       onPressed: () {
                         //signup screen
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const SignUp()));
                       },
                     )
                   ],

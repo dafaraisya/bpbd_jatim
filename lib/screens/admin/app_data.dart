@@ -1,5 +1,7 @@
 import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/components/app_grid.dart';
+import 'package:bpbd_jatim/screens/admin/disaster_data.dart';
+import 'package:bpbd_jatim/screens/admin/resource_data.dart';
 import 'package:flutter/material.dart';
 
 class AppData extends StatelessWidget {
@@ -8,7 +10,7 @@ class AppData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void _onTap() {
-      print("ak");
+      Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterData()));
     }
 
     return Scaffold(
@@ -35,47 +37,21 @@ class AppData extends StatelessWidget {
                       title: "Data Bencana",
                       street: "4 Data",
                       date: "",
-                      onTap: _onTap),
+                      onTap: () => {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterData()))
+                      }),
                   AppCard(
                       imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
+                      title: "Data Sumber Daya",
+                      street: "3 Data",
                       date: "",
-                      onTap: _onTap),
+                      onTap: () => {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ResourceData()))
+                      }),
                   AppCard(
                       imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
-                      date: "",
-                      onTap: _onTap),
-                  AppCard(
-                      imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
-                      date: "",
-                      onTap: _onTap),
-                  AppCard(
-                      imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
-                      date: "",
-                      onTap: _onTap),
-                  AppCard(
-                      imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
-                      date: "",
-                      onTap: _onTap),
-                  AppCard(
-                      imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
-                      date: "",
-                      onTap: _onTap),
-                  AppCard(
-                      imageUrl: "http://placehold.jp/150x150.png",
-                      title: "Data Bencana",
-                      street: "4 Data",
+                      title: "Data Akun",
+                      street: "2 Data",
                       date: "",
                       onTap: _onTap),
                 ]),

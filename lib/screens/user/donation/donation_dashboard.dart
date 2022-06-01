@@ -13,7 +13,7 @@ class DonationDashboard extends StatefulWidget {
 }
 
 class _DonationDashboardState extends State<DonationDashboard> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 3;
 
   static const List<Widget> _navigationOptions = [
     DonationAmount(),

@@ -29,7 +29,12 @@ class ResourceData extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Row(
                       children: [
-                        SvgPicture.asset("assets/icons/back_black.svg"),
+                        InkWell(
+                          onTap: () => {
+                            Navigator.pop(context)
+                          },
+                          child: SvgPicture.asset("assets/icons/back_black.svg"),
+                        ),
                         Container(
                           margin: const EdgeInsets.only(left: 16.0),
                           child: Text(
