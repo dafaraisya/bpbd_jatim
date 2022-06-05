@@ -88,7 +88,7 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _getScreen(index) {
     if (index == 1) {
-      return const Home();
+      return Home();
     } else if (index == 2) {
       return const Profile();
     }

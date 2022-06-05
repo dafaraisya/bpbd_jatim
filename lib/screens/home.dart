@@ -1,10 +1,10 @@
 import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
+import 'package:bpbd_jatim/screens/user/detail_disaster_user.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
-
-import '../components/button.dart';
+import '../globals.dart' as globals;
 
 class Home extends StatelessWidget {
   Home({Key? key}) : super(key: key);
@@ -51,7 +51,7 @@ class Home extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                       ),
-                      const SizedBox(height: 30),
+                      const SizedBox(height: 20),
                       Text(
                         'Peta persebaran bencana',
                         style: Theme.of(context).textTheme.headline6?.copyWith(
@@ -60,7 +60,7 @@ class Home extends StatelessWidget {
                       ),
                       const SizedBox(height: 10),
                       Container(
-                        height: 250,
+                        height: MediaQuery.of(context).size.height/4.2,
                         width: double.infinity,
                         color: Colors.black,
                         child: const MapView(),
@@ -146,7 +146,7 @@ class Home extends StatelessWidget {
                   ],
                 ),
               ),
-              minHeight: 350,
+              minHeight: MediaQuery.of(context).size.height/2.5,
               controller: _pc,
               parallaxOffset: 0.5,
               parallaxEnabled: true,
@@ -198,7 +198,7 @@ class Dummy extends StatelessWidget {
         ),
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
-        itemCount: 5,
+        itemCount: 4,
         itemBuilder: (BuildContext ctx, index) {
           return AppCard(
             title: 'Kebakaran gedung',
@@ -206,8 +206,11 @@ class Dummy extends StatelessWidget {
             street: 'Jl. Semarang surabaya',
             date: '20 Mei 2021',
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const DetailDisaster()));
+              if(globals.isAdmin) {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisaster()));
+              } else {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisasterUser()));
+              }
             },
           );
         });

@@ -30,7 +30,7 @@ class Finalization extends StatelessWidget {
           child: Button(
             press: () {},
             text: 'Upload bukti transfer',
-            isSecondary: true,
+            // isSecondary: true,
           ),
         ),
       ],
