@@ -2,119 +2,156 @@ import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:sliding_up_panel/sliding_up_panel.dart';
+
+import '../components/button.dart';
 
 class Home extends StatelessWidget {
-  const Home({Key? key}) : super(key: key);
+  Home({Key? key}) : super(key: key);
+
+  final GlobalKey _widgetKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
+    final PanelController _pc = PanelController();
+
     return Scaffold(
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Welcome Back,',
-                    style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                          color: Theme.of(context).colorScheme.secondaryVariant,
-                        ),
-                  ),
-                  const Icon(Icons.notification_add_outlined),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Text(
-                'BPBD Jawa Timur',
-                style: Theme.of(context).textTheme.headline5?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
-              const SizedBox(height: 30),
-              Text(
-                'Peta persebaran bencana',
-                style: Theme.of(context).textTheme.headline6?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 241,
-                width: double.infinity,
-                color: Colors.black,
-                child: const MapView(),
-              ),
-              const SizedBox(height: 30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Data bencana',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.add_circle_outline,
-                        size: 16,
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                      const SizedBox(width: 5),
-                      Text(
-                        'Tambah kategori',
-                        style: Theme.of(context).textTheme.caption?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(width: 15),
-              Expanded(
-                child: DefaultTabController(
-                  length: 5,
+        child: Stack(
+          alignment: Alignment.topCenter,
+          children: [
+            SlidingUpPanel(
+              maxHeight: MediaQuery.of(context).size.height,
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TabBar(
-                        isScrollable: true,
-                        indicatorSize: TabBarIndicatorSize.label,
-                        labelColor: Theme.of(context).colorScheme.primary,
-                        labelStyle: Theme.of(context).textTheme.caption,
-                        unselectedLabelColor:
-                            Theme.of(context).colorScheme.secondary,
-                        indicatorColor: Theme.of(context).colorScheme.primary,
-                        tabs: const [
-                          Tab(text: 'Semua'),
-                          Tab(text: 'Kebakaran'),
-                          Tab(text: 'Tanah longsor'),
-                          Tab(text: 'Banjir'),
-                          Tab(text: 'Gempa bumi'),
+                      const SizedBox(height: 30),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Welcome Back,',
+                            style:
+                                Theme.of(context).textTheme.bodyText1?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .secondaryVariant,
+                                    ),
+                          ),
+                          const Icon(Icons.notification_add_outlined),
                         ],
                       ),
                       const SizedBox(height: 10),
-                      const Expanded(
-                        child: TabBarView(
-                          children: [
-                            Dummy(),
-                            Center(),
-                            Center(),
-                            Center(),
-                            Center(),
-                          ],
-                        ),
+                      Text(
+                        'BPBD Jawa Timur',
+                        style: Theme.of(context).textTheme.headline5?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                       ),
+                      const SizedBox(height: 30),
+                      Text(
+                        'Peta persebaran bencana',
+                        style: Theme.of(context).textTheme.headline6?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                      ),
+                      const SizedBox(height: 10),
+                      Container(
+                        height: 250,
+                        width: double.infinity,
+                        color: Colors.black,
+                        child: const MapView(),
+                      ),
+                      const SizedBox(height: 30),
                     ],
                   ),
                 ),
               ),
-            ],
-          ),
+              panel: Padding(
+                padding: const EdgeInsets.symmetric(
+                    vertical: 16.0, horizontal: 16.0),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Data bencana',
+                          style: Theme.of(context).textTheme.bodyText1,
+                        ),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.add_circle_outline,
+                              size: 16,
+                              color: Theme.of(context).colorScheme.primary,
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Tambah kategori',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .caption
+                                  ?.copyWith(
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    const SizedBox(width: 15),
+                    Expanded(
+                      child: DefaultTabController(
+                        length: 5,
+                        child: Column(
+                          children: [
+                            TabBar(
+                              isScrollable: true,
+                              indicatorSize: TabBarIndicatorSize.label,
+                              labelColor: Theme.of(context).colorScheme.primary,
+                              labelStyle: Theme.of(context).textTheme.caption,
+                              unselectedLabelColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              indicatorColor:
+                                  Theme.of(context).colorScheme.primary,
+                              tabs: const [
+                                Tab(text: 'Semua'),
+                                Tab(text: 'Kebakaran'),
+                                Tab(text: 'Tanah longsor'),
+                                Tab(text: 'Banjir'),
+                                Tab(text: 'Gempa bumi'),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            const Expanded(
+                              child: TabBarView(
+                                children: [
+                                  Dummy(),
+                                  Center(),
+                                  Center(),
+                                  Center(),
+                                  Center(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              minHeight: 350,
+              controller: _pc,
+              parallaxOffset: 0.5,
+              parallaxEnabled: true,
+            ),
+          ],
         ),
       ),
     );
@@ -157,7 +194,7 @@ class Dummy extends StatelessWidget {
     return GridView.builder(
         gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
           maxCrossAxisExtent: 200,
-          childAspectRatio: 1 / 1.1,
+          childAspectRatio: 1 / 1.2,
         ),
         physics: const NeverScrollableScrollPhysics(),
         shrinkWrap: true,
@@ -169,7 +206,8 @@ class Dummy extends StatelessWidget {
             street: 'Jl. Semarang surabaya',
             date: '20 Mei 2021',
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisaster()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const DetailDisaster()));
             },
           );
         });
