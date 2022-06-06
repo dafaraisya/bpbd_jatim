@@ -61,27 +61,24 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildIcon(String text, int index) => SizedBox(
         width: double.infinity,
         height: 50,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(8.0, 0, 8.0, 0),
-          child: Material(
-            borderRadius: BorderRadius.circular(100),
-            color: _getBgColor(index),
-            child: InkWell(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SvgPicture.asset(_getItemIcon(index)),
-                  Text(
-                    text,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: _getItemColor(index),
-                    ),
+        child: Material(
+          borderRadius: BorderRadius.circular(100),
+          color: _getBgColor(index),
+          child: InkWell(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SvgPicture.asset(_getItemIcon(index)),
+                Text(
+                  text,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: _getItemColor(index),
                   ),
-                ],
-              ),
-              onTap: () => _onItemTapped(index),
+                ),
+              ],
             ),
+            onTap: () => _onItemTapped(index),
           ),
         ),
       );

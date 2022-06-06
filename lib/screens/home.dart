@@ -146,7 +146,7 @@ class Home extends StatelessWidget {
                   ],
                 ),
               ),
-              minHeight: MediaQuery.of(context).size.height/2.5,
+              minHeight: MediaQuery.of(context).size.height/2.6,
               controller: _pc,
               parallaxOffset: 0.5,
               parallaxEnabled: true,
