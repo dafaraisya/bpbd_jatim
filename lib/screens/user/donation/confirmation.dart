@@ -1,6 +1,8 @@
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/providers/donation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../../../data/payment_list.dart';
 
 class Confirmation extends StatelessWidget {
@@ -64,7 +66,7 @@ class Confirmation extends StatelessWidget {
             ),
             const SizedBox(height: 60),
             Button(
-              press: () {},
+              press: () => Provider.of<DonationProvider>(context, listen: false).changeIndex(3),
               text: 'Konfirmasi',
             ),
           ],

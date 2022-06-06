@@ -1,7 +1,9 @@
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/providers/donation_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
 class DonationAmount extends StatelessWidget {
   const DonationAmount({Key? key}) : super(key: key);
@@ -31,7 +33,7 @@ class DonationAmount extends StatelessWidget {
             const SizedBox(height: 40),
             Button(
               text: 'Lanjutkan',
-              press: () {},
+              press: () => Provider.of<DonationProvider>(context, listen: false).changeIndex(1),
             ),
           ],
         ),
