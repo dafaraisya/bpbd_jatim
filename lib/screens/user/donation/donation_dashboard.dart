@@ -15,8 +15,6 @@ class DonationDashboard extends StatefulWidget {
 }
 
 class _DonationDashboardState extends State<DonationDashboard> {
-  int _selectedIndex = 0;
-
   static const List<Widget> _navigationOptions = [
     DonationAmount(),
     Checkout(),

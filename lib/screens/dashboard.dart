@@ -88,14 +88,14 @@ class _DashboardState extends State<Dashboard> {
   Widget _getScreen(index) {
     if(globals.isAdmin) {
       if (index == 1) {
-        return Home();
+        return const Home();
       } else if (index == 2) {
         return const Profile();
       }
       return const AppData();
     } else {
       if (index == 1) {
-        return Home();
+        return const Home();
       } else if (index == 2) {
         return const Profile();
       }

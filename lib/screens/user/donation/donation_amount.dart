@@ -22,14 +22,14 @@ class DonationAmount extends StatelessWidget {
               style: Theme.of(context).textTheme.headline6,
             ),
             const SizedBox(height: 20),
-            AmountCard(),
+            const AmountCard(),
             const SizedBox(height: 40),
             Text(
               'Catatan',
               style: Theme.of(context).textTheme.headline6,
             ),
             const SizedBox(height: 20),
-            NoteCard(),
+            const NoteCard(),
             const SizedBox(height: 40),
             Button(
               text: 'Lanjutkan',

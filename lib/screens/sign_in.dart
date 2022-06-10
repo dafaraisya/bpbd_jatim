@@ -14,8 +14,6 @@ class SignIn extends StatelessWidget {
     } else if (email == 'user@gmail.com' && password =='user123') {
       globals.isAdmin = false;
       Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
-    } else {
-      print('error');
     }
   }
 

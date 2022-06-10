@@ -5,9 +5,7 @@ class HistoryDonation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _onTap() {
-      
-    }
+    void _onTap () {}
 
     return Scaffold(
       body: SafeArea(
@@ -59,8 +57,8 @@ class DonationCard extends StatelessWidget {
           ),
         ],
       ),
-      margin: EdgeInsets.symmetric(vertical: 4.0),
-      padding: EdgeInsets.all(18.0),
+      margin: const EdgeInsets.symmetric(vertical: 4.0),
+      padding: const EdgeInsets.all(18.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

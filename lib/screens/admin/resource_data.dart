@@ -9,9 +9,7 @@ class ResourceData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _onDownloadButtonPressed() {
-      print("asdasd");
-    }
+    void _onDownloadButtonPressed() {}
 
     final PanelController _pc1 = PanelController();
 

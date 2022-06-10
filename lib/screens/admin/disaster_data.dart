@@ -13,9 +13,7 @@ class DisasterData extends StatelessWidget {
   Widget build(BuildContext context) {
     final PanelController _pc = PanelController();
 
-    void _onTap() {
-      print("asdasd");
-    }
+    void _onTap() {}
 
     return Scaffold(
       body: Stack(

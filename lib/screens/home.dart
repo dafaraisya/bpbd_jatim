@@ -7,9 +7,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '../globals.dart' as globals;
 
 class Home extends StatelessWidget {
-  Home({Key? key}) : super(key: key);
-
-  final GlobalKey _widgetKey = GlobalKey();
+  const Home({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +36,7 @@ class Home extends StatelessWidget {
                                 Theme.of(context).textTheme.bodyText1?.copyWith(
                                       color: Theme.of(context)
                                           .colorScheme
-                                          .secondaryVariant,
+                                          .secondaryContainer,
                                     ),
                           ),
                           const Icon(Icons.notification_add_outlined),
