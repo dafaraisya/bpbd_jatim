@@ -132,7 +132,7 @@ class Home extends StatelessWidget {
                               child: TabBarView(
                                 children: [
                                   Dummy(),
-                                  Center(),
+                                  Dummy(),
                                   Center(),
                                   Center(),
                                   Center(),
@@ -192,27 +192,27 @@ class Dummy extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GridView.builder(
-        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 200,
-          childAspectRatio: 1 / 1.2,
-        ),
-        physics: const NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: 4,
-        itemBuilder: (BuildContext ctx, index) {
-          return AppCard(
-            title: 'Kebakaran gedung',
-            imageUrl: 'https://picsum.photos/200/300',
-            street: 'Jl. Semarang surabaya',
-            date: '20 Mei 2021',
-            onTap: () {
-              if(globals.isAdmin) {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisaster()));
-              } else {
-                Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisasterUser()));
-              }
-            },
-          );
-        });
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
+        childAspectRatio: 1 / 1.2,
+      ),
+      physics: const NeverScrollableScrollPhysics(),
+      shrinkWrap: true,
+      itemCount: 4,
+      itemBuilder: (BuildContext ctx, index) {
+        return AppCard(
+          title: 'Kebakaran gedung',
+          imageUrl: 'assets/images/kebakaran_gedung_thumb.png',
+          street: 'Jl. Semarang surabaya',
+          date: '20 Mei 2021',
+          onTap: () {
+            if(globals.isAdmin) {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisaster()));
+            } else {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisasterUser()));
+            }
+          },
+        );
+      });
   }
 }

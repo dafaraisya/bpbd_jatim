@@ -13,7 +13,7 @@ class ResourceData extends StatelessWidget {
       print("asdasd");
     }
 
-    final PanelController _pc = PanelController();
+    final PanelController _pc1 = PanelController();
 
     return Scaffold(
       body: Stack(
@@ -81,18 +81,18 @@ class ResourceData extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Expanded(
-                    child: ListView.builder(
-                      itemCount: 5,
-                      itemBuilder: (context, index) {
-                        return const ResourceCard();
-                      },
+                    child: ListView(
+                      children: [
+                        const ResourceCard(assetPath: 'assets/images/damkar_thumb.png'),
+                        const ResourceCard(assetPath: 'assets/images/dokter_thumb.png'),
+                      ],
                     ),
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Button(
                       text: 'Tambah data',
-                      press: () => _pc.open(),
+                      press: () => _pc1.open(),
                     ),
                   ),
                 ],
@@ -100,7 +100,7 @@ class ResourceData extends StatelessWidget {
             ),
           ),
           SlidingUpPanel(
-            maxHeight: MediaQuery.of(context).size.height * 0.5,
+            maxHeight: MediaQuery.of(context).size.height * 0.6,
             panel: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(
@@ -123,7 +123,7 @@ class ResourceData extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 18.0, vertical: 8),
                             child: InkWell(
-                              onTap: () => _pc.close(),
+                              onTap: () => _pc1.close(),
                               child: Icon(
                                 Icons.close,
                                 color: Theme.of(context).colorScheme.surface,
@@ -202,7 +202,7 @@ class ResourceData extends StatelessWidget {
                         SizedBox(
                           width: double.infinity,
                           child: Button(
-                            press: () => _pc.open(),
+                            press: () => _pc1.open(),
                             text: "Tambah Data",
                           ),
                         )
@@ -213,7 +213,7 @@ class ResourceData extends StatelessWidget {
               ),
             ),
             minHeight: 0,
-            controller: _pc,
+            controller: _pc1,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
           ),
         ],
@@ -223,7 +223,9 @@ class ResourceData extends StatelessWidget {
 }
 
 class ResourceCard extends StatelessWidget {
-  const ResourceCard({Key? key}) : super(key: key);
+  const ResourceCard({Key? key, this.assetPath}) : super(key: key);
+
+  final String? assetPath;
 
   @override
   Widget build(BuildContext context) {
@@ -245,8 +247,8 @@ class ResourceCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.network(
-                  'https://picsum.photos/200/300',
+                Image.asset(
+                  assetPath!,
                   width: 47,
                   height: 44,
                   fit: BoxFit.cover,

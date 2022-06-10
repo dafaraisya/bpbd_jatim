@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../globals.dart' as globals;
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
@@ -30,12 +31,16 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       body: Column(
         children: [
-          Container(
+          globals.isAdmin ? Container(
             padding: const EdgeInsets.only(top: 100),
             alignment: Alignment.center,
-            child: profilePic()
+            child: adminProfilePic()
+          ) : Container(
+            padding: const EdgeInsets.only(top: 100),
+            alignment: Alignment.center,
+            child: userProfilePic()
           ),
-          const Padding(
+          globals.isAdmin ? const Padding(
             padding: EdgeInsets.only(top: 18),
             child: Text(
               'BPBD Jawa Timur',
@@ -44,11 +49,29 @@ class _ProfileState extends State<Profile> {
                 fontSize: 18,
                 color: Colors.black),
             ),
+          ) : const Padding(
+            padding: EdgeInsets.only(top: 18),
+            child: Text(
+              'Samuel prasetya',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: Colors.black),
+            ),
           ),
-          const Align(
+          globals.isAdmin ? const Align(
             alignment: Alignment.center,
             child: Text(
               'Admin',
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w300),
+            ),
+          ) : const Align(
+            alignment: Alignment.center,
+            child: Text(
+              'User',
               style: TextStyle(
                   color: Colors.black,
                   fontSize: 15,
@@ -106,13 +129,24 @@ class _ProfileState extends State<Profile> {
     ]));
   }
 
-  SizedBox profilePic() {
+  SizedBox adminProfilePic() {
     return const SizedBox(
       height: 150,
       width: 150,
       child: CircleAvatar(
         backgroundColor: Colors.white,
         backgroundImage: AssetImage('assets/images/admin_profile_photo.png')
+      )
+    );
+  }
+
+  SizedBox userProfilePic() {
+    return const SizedBox(
+      height: 150,
+      width: 150,
+      child: CircleAvatar(
+        backgroundColor: Colors.white,
+        backgroundImage: AssetImage('assets/images/user_profile_photo.png')
       )
     );
   }

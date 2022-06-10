@@ -83,53 +83,53 @@ class DisasterData extends StatelessWidget {
                     child: ListView(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      padding: const EdgeInsets.fromLTRB(28, 16, 28, 16),
                       child: AppGrid(
                         widgetList: [
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
                               onTap: _onTap),
                           AppCard(
-                              imageUrl: "http://placehold.jp/150x150.png",
+                              imageUrl: "assets/images/kebakaran_gedung_thumb.png",
                               title: "Data Bencana",
                               street: "4 Data",
                               date: "",
@@ -151,7 +151,7 @@ class DisasterData extends StatelessWidget {
             ),
           ),
           SlidingUpPanel(
-            maxHeight: MediaQuery.of(context).size.height * 0.7,
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
             panel: Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: Column(

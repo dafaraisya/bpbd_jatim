@@ -23,7 +23,7 @@ class _CheckoutState extends State<Checkout> {
       child: Column(
         children: <Widget>[
           Container(
-            margin: const EdgeInsets.symmetric(vertical: 64.0),
+            margin: const EdgeInsets.symmetric(vertical: 40.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -71,7 +71,7 @@ class _CheckoutState extends State<Checkout> {
                   ),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.3,
+                  height: MediaQuery.of(context).size.height * 0.4,
                   child: TabBarView(
                     children: [
                       Column(

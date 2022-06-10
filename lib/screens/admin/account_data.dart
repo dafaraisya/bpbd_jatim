@@ -23,7 +23,10 @@ class AccountData extends StatelessWidget {
                     const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
                 child: Row(
                   children: [
-                    SvgPicture.asset("assets/icons/back_black.svg"),
+                    InkWell(
+                      onTap: () => Navigator.pop(context),
+                      child: SvgPicture.asset("assets/icons/back_black.svg"),  
+                    ),
                     Container(
                       margin: const EdgeInsets.only(left: 16.0),
                       child: Text(
@@ -65,52 +68,28 @@ class AccountData extends StatelessWidget {
                 child: ListView(
                   children: [
                     UserCard(
-                        name: "Nama",
+                        name: "BPBD Jatim",
                         role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
+                        email: "bpbdjatim@gmail.com",
+                        phone: "0856 - 5658 - 8975",
                         onTap: _onDownloadButtonPressed),
                     UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
+                        name: "Relawan Sidoarjo",
+                        role: "User",
+                        email: "relawan@gmail.com",
+                        phone: "0856 - 5658 - 8975",
                         onTap: _onDownloadButtonPressed),
                     UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
+                        name: "TNI AD",
+                        role: "User",
+                        email: "TNIADRI@gmail.com",
+                        phone: "0856 - 5658 - 8975",
                         onTap: _onDownloadButtonPressed),
                     UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
-                        onTap: _onDownloadButtonPressed),
-                    UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
-                        onTap: _onDownloadButtonPressed),
-                    UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
-                        onTap: _onDownloadButtonPressed),
-                    UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
-                        onTap: _onDownloadButtonPressed),
-                    UserCard(
-                        name: "Nama",
-                        role: "Admin",
-                        email: "arisetiawan@afgnas",
-                        phone: "+asddhask",
+                        name: "Polrestabes Surabaya",
+                        role: "User",
+                        email: "Polressby@gmail.com",
+                        phone: "0856 - 5658 - 8975",
                         onTap: _onDownloadButtonPressed),
                   ],
                 ),

@@ -1,4 +1,5 @@
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/screens/dashboard.dart';
 import 'package:flutter/material.dart';
 
 class Finalization extends StatelessWidget {
@@ -20,7 +21,9 @@ class Finalization extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Button(
-            press: () {},
+            press: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
+            },
             text: 'Kembali ke halaman utama',
           ),
         ),

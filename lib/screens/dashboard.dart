@@ -1,8 +1,10 @@
 import 'package:bpbd_jatim/screens/admin/app_data.dart';
 import 'package:bpbd_jatim/screens/home.dart';
 import 'package:bpbd_jatim/screens/profile.dart';
+import 'package:bpbd_jatim/screens/user/donation/history_donation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import '../globals.dart' as globals;
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key? key}) : super(key: key);
@@ -59,7 +61,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildIcon(String text, int index) => SizedBox(
-        width: double.infinity,
+        width: 100,
         height: 50,
         child: Material(
           borderRadius: BorderRadius.circular(100),
@@ -84,12 +86,21 @@ class _DashboardState extends State<Dashboard> {
       );
 
   Widget _getScreen(index) {
-    if (index == 1) {
-      return Home();
-    } else if (index == 2) {
-      return const Profile();
+    if(globals.isAdmin) {
+      if (index == 1) {
+        return Home();
+      } else if (index == 2) {
+        return const Profile();
+      }
+      return const AppData();
+    } else {
+      if (index == 1) {
+        return Home();
+      } else if (index == 2) {
+        return const Profile();
+      }
+      return const HistoryDonation();
     }
-    return const AppData();
   }
 
   @override
@@ -107,14 +118,16 @@ class _DashboardState extends State<Dashboard> {
           showUnselectedLabels: false,
           currentIndex: _selectedIndex,
           backgroundColor: Theme.of(context).colorScheme.primary,
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: _buildIcon('Data', 0), label: ''),
-            BottomNavigationBarItem(
-                icon: _buildIcon('Home', 1), label: ''),
-            BottomNavigationBarItem(
-                icon: _buildIcon('Profile', 2), label: ''),
-          ],
+          items: globals.isAdmin ? 
+          <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: _buildIcon('Data', 0), label: ''),
+            BottomNavigationBarItem(icon: _buildIcon('Home', 1), label: ''),
+            BottomNavigationBarItem(icon: _buildIcon('Profile', 2), label: ''),
+          ] : <BottomNavigationBarItem>[
+            BottomNavigationBarItem(icon: _buildIcon('Histori', 0), label: ''),
+            BottomNavigationBarItem(icon: _buildIcon('Home', 1), label: ''),
+            BottomNavigationBarItem(icon: _buildIcon('Profile', 2), label: ''),
+          ] 
         ),
       ),
     );

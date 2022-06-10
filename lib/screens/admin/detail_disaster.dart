@@ -153,7 +153,7 @@ class _DetailImageState extends State<DetailImage> {
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: NetworkImage('https://picsum.photos/250?image=9'),
+                    image: AssetImage('assets/images/kebakaran_gedung_thumb.png'),
                   ),
                 ),
               ),

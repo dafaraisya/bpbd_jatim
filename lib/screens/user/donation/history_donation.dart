@@ -1,5 +1,3 @@
-import 'package:bpbd_jatim/components/app_card.dart';
-import 'package:bpbd_jatim/components/app_grid.dart';
 import 'package:flutter/material.dart';
 
 class HistoryDonation extends StatelessWidget {
@@ -8,7 +6,7 @@ class HistoryDonation extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     void _onTap() {
-      print("ak");
+      
     }
 
     return Scaffold(
@@ -79,7 +77,7 @@ class DonationCard extends StatelessWidget {
                       color: Theme.of(context).colorScheme.secondary),
                 ),
                 Text(
-                  "Tanggal",
+                  "24 / 05 / 2021",
                   style: Theme.of(context)
                       .textTheme
                       .bodyText1

@@ -1,5 +1,6 @@
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/components/label.dart';
+import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
 import 'package:bpbd_jatim/screens/user/donation/donation_amount.dart';
 import 'package:bpbd_jatim/screens/user/donation/donation_dashboard.dart';
 import 'package:flutter/material.dart';
@@ -111,8 +112,8 @@ class DetailDisasterUser extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 10,),
-                    const SumberBantuan(),
-                    const SumberBantuan(),
+                    const SumberBantuan(sumberBantuan: 'BPBD Jatim', keteranganBantuan: 'Damkar Surabaya : 24 personil',),
+                    const SumberBantuan(sumberBantuan: 'Relawan Sidoarjo', keteranganBantuan: 'Dokter : 6 personil',),
                     const SizedBox(height: 20,),
                     Button(
                       press: () {
@@ -153,7 +154,7 @@ class _DetailImageState extends State<DetailImage> {
                 decoration: const BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: NetworkImage('https://picsum.photos/250?image=9'),
+                    image: AssetImage('assets/images/kebakaran_gedung_thumb.png'),
                   ),
                 ),
               ),
@@ -182,7 +183,10 @@ class _DetailImageState extends State<DetailImage> {
 }
 
 class SumberBantuan extends StatelessWidget {
-  const SumberBantuan({ Key? key }) : super(key: key);
+  const SumberBantuan({ Key? key, this.sumberBantuan, this.keteranganBantuan }) : super(key: key);
+
+  final String? sumberBantuan;
+  final String? keteranganBantuan;
 
   @override
   Widget build(BuildContext context) {
@@ -193,7 +197,7 @@ class SumberBantuan extends StatelessWidget {
           Container(
             alignment: Alignment.topLeft,
             child: Text(
-              'BPBD Jatim',
+              sumberBantuan!,
               style: Theme.of(context).textTheme.subtitle1?.copyWith(
                   color: Theme.of(context).colorScheme.surface),
             ),
@@ -201,7 +205,7 @@ class SumberBantuan extends StatelessWidget {
           Container(
             alignment: Alignment.topLeft,
             child: Text(
-              'Damkar Surabaya : 24 personil',
+              keteranganBantuan!, 
               style: Theme.of(context).textTheme.caption?.copyWith(
                   color: Theme.of(context).colorScheme.secondary),
             ),
