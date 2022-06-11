@@ -27,7 +27,7 @@ class SignUpVerified extends StatelessWidget {
               const SizedBox(height: 25,),
               Button(
                 press: () => {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => const SignIn()))
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => SignIn()))
                 },
                 text: "Back to login",
               )
