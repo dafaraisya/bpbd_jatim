@@ -43,6 +43,14 @@ dependencies:
   intl: ^0.17.0
   shared_preferences: ^2.0.15
   provider: ^6.0.3
+  firebase_core: 
+  firebase_messaging: 
+  firebase_auth: 
+  firebase_storage:  
+  firebase_analytics:
+  cloud_firestore: 
+  flutter_local_notifications:
+  flutter_easyloading:
 
 dev_dependencies:
   flutter_test:

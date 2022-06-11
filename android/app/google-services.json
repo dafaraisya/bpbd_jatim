@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "341175572615",
+    "project_id": "bpbd-jatim",
+    "storage_bucket": "bpbd-jatim.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:341175572615:android:032c3d0d3c484cad2c0022",
+        "android_client_info": {
+          "package_name": "com.example.bpbd_jatim"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "341175572615-2j0vhrd1qsr35ok0mt381jpa0mm13g3s.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_IG8RPZpSu3tEcJkW2JTvgcxX1wXycNc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "341175572615-2j0vhrd1qsr35ok0mt381jpa0mm13g3s.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
