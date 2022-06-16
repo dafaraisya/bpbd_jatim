@@ -1,4 +1,6 @@
+import 'package:bpbd_jatim/screens/sign_in.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../globals.dart' as globals;
 
 class Profile extends StatefulWidget {
@@ -25,6 +27,12 @@ class _ProfileState extends State<Profile> {
       });  
     }  
   }  
+
+  void signOut(BuildContext context) async{
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.remove('user');
+    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SignIn()));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +107,15 @@ class _ProfileState extends State<Profile> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: profileInfo(Icons.live_help_outlined, "Help"),
+          ),
+          InkWell(
+            onTap: () => {
+              signOut(context)
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: profileInfo(Icons.logout_outlined, "Sign Out"),
+            ),
           ),
         ],
       ),

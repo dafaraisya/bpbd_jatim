@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'globals.dart' as globals;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -32,6 +33,11 @@ class _MyAppState extends State<MyApp> {
     if (preferences.getString('user') != null) {
       setState((){
         user = preferences.getString('user') != null ? jsonDecode(preferences.getString("user")!) : null;
+        if(user['privilege'] == 'admin') {
+          globals.isAdmin = true;
+        } else {
+          globals.isAdmin = false;
+        }
       });
     }
   }

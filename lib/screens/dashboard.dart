@@ -1,9 +1,12 @@
+import 'dart:developer';
+
 import 'package:bpbd_jatim/screens/admin/app_data.dart';
 import 'package:bpbd_jatim/screens/home.dart';
 import 'package:bpbd_jatim/screens/profile.dart';
 import 'package:bpbd_jatim/screens/user/donation/history_donation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../globals.dart' as globals;
 
 class Dashboard extends StatefulWidget {
@@ -14,6 +17,18 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
+  Object? userRole = '';
+  getSharedPreferences() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    userRole = preferences.getString('user');
+  }
+
+  @override
+  void initState() {
+    super.initState(); 
+    getSharedPreferences();
+  }
+
   int _selectedIndex = 1;
 
   void _onItemTapped(int index) {
