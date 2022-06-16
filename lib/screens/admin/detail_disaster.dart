@@ -1,145 +1,285 @@
 import 'package:bpbd_jatim/components/label.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:intl/intl.dart';
 
-class DetailDisaster extends StatelessWidget {
-  const DetailDisaster({ Key? key }) : super(key: key);
+final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+class DetailDisaster extends StatefulWidget {
+  final String documentId;
+
+  const DetailDisaster({ Key? key, required this.documentId }) : super(key: key);
+
+  @override
+  State<DetailDisaster> createState() => _DetailDisasterState();
+}
+
+class _DetailDisasterState extends State<DetailDisaster> {
+  String formattedDate (date) {      
+    dynamic dateData = date;
+    final birthDate = DateTime.fromMicrosecondsSinceEpoch(dateData.microsecondsSinceEpoch);
+    String formattedDate = DateFormat('dd MMMM yyyy').format(birthDate);
+    return formattedDate;
+  }
+
+  TextEditingController accountNameController = TextEditingController();
+  TextEditingController personnelController = TextEditingController();
+  TextEditingController totalPersonnelController = TextEditingController();
+  String? accountName;
+  String? personnel;
+  String? totalPersonnel;
+
+  Future<void> createResourcesHelp() async {
+    try {
+      await firestore
+        .collection('disasters')
+        .doc(widget.documentId)
+        .update({
+          'resourcesHelp': FieldValue.arrayUnion([{
+            'accountName': accountName,
+            'personnel' : personnel,
+            'totalPersonnel' : totalPersonnel
+          }])
+        });
+    } catch (_) {
+      EasyLoading.showInfo('Failed');
+      return;
+    }
+  }
+
+  Future<void> createCategoryDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tambah Sumber Bantuan'),
+          content: SizedBox(
+            height: 150.0,
+            child: Column(
+              children: [
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      accountName = value;
+                    });
+                  },
+                  style: const TextStyle(
+                    color: Colors.black
+                  ),
+                  controller: accountNameController,
+                  decoration: const InputDecoration(hintText: "Masukkan Instansi Pemberi Bantuan",),
+                ),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      personnel = value;
+                    });
+                  },
+                  style: const TextStyle(
+                    color: Colors.black
+                  ),
+                  controller: personnelController,
+                  decoration: const InputDecoration(hintText: "Masukkan Bentuk Bantuan",),
+                ),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      totalPersonnel = value;
+                    });
+                  },
+                  style: const TextStyle(
+                    color: Colors.black
+                  ),
+                  controller: totalPersonnelController,
+                  decoration: const InputDecoration(hintText: "Masukkan Jumlah Bentuk Bantuan",),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              textColor: Colors.white,
+              child: const Text('Batalkan'),
+              onPressed: () {
+                setState(() {
+                  Navigator.pop(context);
+                });
+              },
+            ),
+            FlatButton(
+              color: Theme.of(context).colorScheme.primary,
+              textColor: Colors.white,
+              child: const Text('Masukkan'),
+              onPressed: () {
+                createResourcesHelp();
+                Navigator.pop(context);
+              },
+            ),
+
+          ],
+        );
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          const DetailImage(),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height *.65,
-              decoration: const BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20)
-                ),
-                color: Color.fromARGB(255, 255, 255, 255)
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: ListView(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Kebakaran gedung', style: Theme.of(context).textTheme.headline5,),
-                        InkWell(
-                          onTap: () {},
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(5),
-                              border: Border.all(color: Colors.grey)
-                            ),
-                            child: const Icon(Icons.more_horiz_outlined),
-                          ),
-                        )
-                      ],
+      body: StreamBuilder(
+        stream: firestore
+          .collection('disasters')
+          .doc(widget.documentId)
+          .snapshots(),
+        builder: (context, snapshot) {
+          if(snapshot.hasData) {
+            return Stack(
+              children: [
+                DetailImage(imageUrl: (snapshot.data as dynamic)['disasterImage']),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height *.65,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)
+                      ),
+                      color: Color.fromARGB(255, 255, 255, 255)
                     ),
-                    Text('Jl. Semarang surabaya', style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                    const SizedBox(height: 30,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Deskripsi', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                        const Label(text: 'Aktif',)
-                      ],
-                    ),
-                    const SizedBox(height: 20,),
-                    const Text('Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.', textAlign: TextAlign.justify,),
-                    const SizedBox(height: 15,),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.date_range,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        const SizedBox(width: 10,),
-                        const Text(
-                          "20 Mei 2021",
-                          style: TextStyle(color: Colors.black, fontSize: 15),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10,),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.access_time,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                        const SizedBox(width: 10,),
-                        const Text(
-                          "12.00 WIB",
-                          style: TextStyle(color: Colors.black, fontSize: 15),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Sumber Bantuan', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Tambah kategori',
-                              style: Theme.of(context).textTheme.caption?.copyWith(
-                                    color: Theme.of(context).colorScheme.primary,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ListView(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text((snapshot.data as dynamic)['disasterName'], style: Theme.of(context).textTheme.headline5,),
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.all(3),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(5),
+                                    border: Border.all(color: Colors.grey)
                                   ),
-                            ),
-                          ],
-                        ),
-                      ],
+                                  child: const Icon(Icons.more_horiz_outlined),
+                                ),
+                              )
+                            ],
+                          ),
+                          Text((snapshot.data as dynamic)['address'], style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+                          const SizedBox(height: 30,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Deskripsi', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+                              Label(text: (snapshot.data as dynamic)['status'],)
+                            ],
+                          ),
+                          const SizedBox(height: 20,),
+                          Text((snapshot.data as dynamic)['description'], textAlign: TextAlign.justify,),
+                          const SizedBox(height: 15,),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.date_range,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              const SizedBox(width: 10,),
+                              Text(
+                                formattedDate((snapshot.data as dynamic)['date']),
+                                style: const TextStyle(color: Colors.black, fontSize: 15),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.access_time,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                              const SizedBox(width: 10,),
+                              Text(
+                                (snapshot.data as dynamic)['timeHour'] + ' WIB',
+                                style: const TextStyle(color: Colors.black, fontSize: 15),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Sumber Bantuan', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+                              InkWell(
+                                onTap: () {
+                                  createCategoryDialog(context);
+                                },
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.add_circle_outline,
+                                      size: 16,
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      'Tambah Data',
+                                      style: Theme.of(context).textTheme.caption?.copyWith(
+                                            color: Theme.of(context).colorScheme.primary,
+                                          ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Column(
+                            children: List.generate((snapshot.data as dynamic)['resourcesHelp'].length, (index) => SumberBantuan(
+                              accountName: (snapshot.data as dynamic)['resourcesHelp'][index]['accountName'],
+                              personnel: (snapshot.data as dynamic)['resourcesHelp'][index]['personnel'],
+                              totalPersonnel: (snapshot.data as dynamic)['resourcesHelp'][index]['totalPersonnel'],
+                            ))
+                          ),
+                          const SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Donasi Pengguna', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+                              Text('Rp.' + (snapshot.data as dynamic)['totalDonation'].toString(), style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.primary)),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Column(
+                            children: List.generate((snapshot.data as dynamic)['donations'].length, (index) => DonasiPengguna(
+                              documentId: (snapshot.data as dynamic)['donations'][index],
+                            )),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 10,),
-                    const SumberBantuan(),
-                    const SumberBantuan(),
-                    const SizedBox(height: 20,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text('Donasi Pengguna', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                        Text('Rp. 3.000.000', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.primary)),
-                      ],
-                    ),
-                    const SizedBox(height: 10,),
-                    const DonasiPengguna(),
-                    const DonasiPengguna(),
-                  ],
-                ),
-              ),
-            ),
-          )
-        ],
+                  ),
+                )
+              ],
+            );
+          }
+          return (const Text('Data tidak ditemukan'));
+        },
       ),
     );
   }
 }
 
-class DetailImage extends StatefulWidget {
-  const DetailImage({ Key? key }) : super(key: key);
+class DetailImage extends StatelessWidget {
+  final String? imageUrl;
 
-  @override
-  _DetailImageState createState() => _DetailImageState();
-}
+  const DetailImage({ Key? key, this.imageUrl }) : super(key: key);
 
-class _DetailImageState extends State<DetailImage> {
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -150,10 +290,10 @@ class _DetailImageState extends State<DetailImage> {
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: 270,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   image: DecorationImage(
                     fit: BoxFit.cover,
-                    image: AssetImage('assets/images/kebakaran_gedung_thumb.png'),
+                    image: NetworkImage(imageUrl!),
                   ),
                 ),
               ),
@@ -181,8 +321,13 @@ class _DetailImageState extends State<DetailImage> {
   }
 }
 
+
 class SumberBantuan extends StatelessWidget {
-  const SumberBantuan({ Key? key }) : super(key: key);
+  final String? accountName;
+  final String? personnel;
+  final String? totalPersonnel;
+
+  const SumberBantuan({ Key? key, this.accountName, this.personnel, this.totalPersonnel }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -212,7 +357,7 @@ class SumberBantuan extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Text(
-                'BPBD Jatim',
+                accountName!,
                 style: Theme.of(context).textTheme.subtitle1?.copyWith(
                     color: Theme.of(context).colorScheme.surface),
               ),
@@ -220,7 +365,7 @@ class SumberBantuan extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Text(
-                'Damkar Surabaya : 24 personil',
+                personnel! + ' : ' + totalPersonnel! + 'personil',
                 style: Theme.of(context).textTheme.caption?.copyWith(
                     color: Theme.of(context).colorScheme.secondary),
               ),
@@ -241,7 +386,9 @@ class SumberBantuan extends StatelessWidget {
 }
 
 class DonasiPengguna extends StatelessWidget {
-  const DonasiPengguna({ Key? key }) : super(key: key);
+  final String? documentId;
+
+  const DonasiPengguna({ Key? key, this.documentId }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -254,38 +401,49 @@ class DonasiPengguna extends StatelessWidget {
         border: Border.all(color: Colors.grey.withOpacity(0.15))
       ),
       padding: const EdgeInsets.all(10.0),
-      child: Column(
-        children: [
-          Container(
-            alignment: Alignment.topLeft,
-            child: Text(
-              'Liona firsyan',
-              style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                  color: Theme.of(context).colorScheme.surface),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                alignment: Alignment.topLeft,
-                child: Text(
-                  'Rp. 1.500.000',
-                  style: Theme.of(context).textTheme.caption?.copyWith(
-                      color: Theme.of(context).colorScheme.secondary),
+      child: StreamBuilder(
+        stream: firestore
+          .collection('donations')
+          .doc(documentId)
+          .snapshots(),
+        builder: (context, snapshot) {
+          if(snapshot.hasData) {
+            return Column(
+              children: [
+                Container(
+                  alignment: Alignment.topLeft,
+                  child: Text(
+                    (snapshot.data as dynamic)['accountName'],
+                    style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                        color: Theme.of(context).colorScheme.surface),
+                  ),
                 ),
-              ),
-              InkWell(
-                onTap: () {},
-                child: Text(
-                  'Lihat bukti >',
-                  style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                      color: Theme.of(context).colorScheme.primary),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Container(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        'Rp.' + (snapshot.data as dynamic)['donationAmount'].toString(),
+                        style: Theme.of(context).textTheme.caption?.copyWith(
+                            color: Theme.of(context).colorScheme.secondary),
+                      ),
+                    ),
+                    // InkWell(
+                    //   onTap: () {},
+                    //   child: Text(
+                    //     'Lihat bukti >',
+                    //     style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                    //         color: Theme.of(context).colorScheme.primary),
+                    //   ),
+                    // )
+                  ],
                 ),
-              )
-            ],
-          ),
-        ],
+              ],
+            );
+          }
+          return const Text('Data tidak ditemukan');
+        },
       ),
     );
   }

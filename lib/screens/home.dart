@@ -1,13 +1,11 @@
 import 'dart:developer';
 
 import 'package:bpbd_jatim/components/app_card.dart';
-import 'package:bpbd_jatim/database.dart';
-import 'package:bpbd_jatim/models.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
 import 'package:bpbd_jatim/screens/user/detail_disaster_user.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -29,10 +27,78 @@ class _HomeState extends State<Home> {
     log('$userRole');
   }
 
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  TextEditingController createCategoryController = TextEditingController();
+  String? newCategory;
+  
+  Future<void> createCategoryDisaster() async {
+    try {
+      await firestore.collection('disasterCategories').add({
+        'categoryName': newCategory,
+        'date' : Timestamp.now()
+      });
+    } catch (_) {
+      EasyLoading.showInfo('Failed');
+      return;
+    }
+  }
+
+  Future<void> createCategoryDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Tambah Kategori Bencana'),
+          content: TextField(
+            onChanged: (value) {
+              setState(() {
+                newCategory = value;
+              });
+            },
+            style: const TextStyle(
+              color: Colors.black
+            ),
+            controller: createCategoryController,
+            decoration: const InputDecoration(hintText: "Masukkan Kategori Bencana",),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              textColor: Colors.white,
+              child: const Text('Batalkan'),
+              onPressed: () {
+                setState(() {
+                  newCategory = '';
+                  Navigator.pop(context);
+                });
+              },
+            ),
+            FlatButton(
+              color: Theme.of(context).colorScheme.primary,
+              textColor: Colors.white,
+              child: const Text('Masukkan'),
+              onPressed: () {
+                createCategoryDisaster();
+                Navigator.pop(context);
+              },
+            ),
+
+          ],
+        );
+      });
+  }
+
   @override
   void initState() {
     super.initState(); 
     getSharedPreferences();
+  }
+
+  @override
+  void dispose() {
+    createCategoryController.dispose();
+    super.dispose();
   }
 
   @override
@@ -108,25 +174,30 @@ class _HomeState extends State<Home> {
                           'Data bencana',
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.primary,
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Tambah kategori',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .caption
-                                  ?.copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.primary,
-                                  ),
-                            ),
-                          ],
+                        InkWell(
+                          onTap: () {
+                            createCategoryDialog(context);
+                          },
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.add_circle_outline,
+                                size: 16,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Tambah kategori',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .caption
+                                    ?.copyWith(
+                                      color:
+                                          Theme.of(context).colorScheme.primary,
+                                    ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -135,6 +206,7 @@ class _HomeState extends State<Home> {
                       child: StreamBuilder(
                         stream: FirebaseFirestore.instance
                           .collection("disasterCategories")
+                          .orderBy('date', descending: false)
                           .snapshots(),
                         builder: (context, AsyncSnapshot<QuerySnapshot>snapshot) {
                           if(snapshot.hasData) {
@@ -231,36 +303,43 @@ class DisasterDataList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseFirestore.instance
+      stream: disasterCategory == 'Pilih Kategori Bencana' ? FirebaseFirestore.instance
+        .collection("disasters")
+        .snapshots() : 
+      FirebaseFirestore.instance
         .collection("disasters")
         .where("disasterCategory", isEqualTo: disasterCategory)
         .snapshots(),
       builder: (context,  AsyncSnapshot<QuerySnapshot>snapshot) {
         if(snapshot.hasData) {
-          return GridView.builder(
-            gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-              maxCrossAxisExtent: 200,
-              childAspectRatio: 1 / 1.2,
-            ),
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: snapshot.data!.docs.length,
-            itemBuilder: (BuildContext ctx, index) {
-              return AppCard(
-                title: snapshot.data!.docs[index]["disasterName"],
-                imageUrl: snapshot.data!.docs[index]["disasterImage"],
-                street:  snapshot.data!.docs[index]["address"],
-                date: formattedDate(snapshot.data!.docs[index]["date"]),
-                onTap: () {
-                  if(globals.isAdmin) {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisaster()));
-                  } else {
-                    Navigator.push(context, MaterialPageRoute(builder: (_) => const DetailDisasterUser()));
-                  }
-                },
-              );
-            }
-          );
+          if(snapshot.data!.docs.isEmpty) {
+            return const Text('Belum Ada Data', textAlign: TextAlign.center,);
+          } else {
+            return GridView.builder(
+              gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                maxCrossAxisExtent: 200,
+                childAspectRatio: 1 / 1.2,
+              ),
+              physics: const NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (BuildContext ctx, index) {
+                return AppCard(
+                  title: snapshot.data!.docs[index]["disasterName"],
+                  imageUrl: snapshot.data!.docs[index]["disasterImage"],
+                  street:  snapshot.data!.docs[index]["address"],
+                  date: formattedDate(snapshot.data!.docs[index]["date"]),
+                  onTap: () {
+                    if(globals.isAdmin) {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(documentId: snapshot.data!.docs[index].id)));
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterUser(documentId: snapshot.data!.docs[index].id)));
+                    }
+                  },
+                );
+              }
+            );
+          }
         }
         return const Center(child: CircularProgressIndicator());
       },
