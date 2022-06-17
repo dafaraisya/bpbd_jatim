@@ -239,12 +239,15 @@ class _DetailDisasterState extends State<DetailDisaster> {
                             ],
                           ),
                           const SizedBox(height: 10,),
+                          (snapshot.data as dynamic)['resourcesHelp'].length > 0 ?
                           Column(
                             children: List.generate((snapshot.data as dynamic)['resourcesHelp'].length, (index) => SumberBantuan(
                               accountName: (snapshot.data as dynamic)['resourcesHelp'][index]['accountName'],
                               personnel: (snapshot.data as dynamic)['resourcesHelp'][index]['personnel'],
                               totalPersonnel: (snapshot.data as dynamic)['resourcesHelp'][index]['totalPersonnel'],
                             ))
+                          ) : (
+                            Text('Data tidak ditemukan', textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary))
                           ),
                           const SizedBox(height: 20,),
                           Row(

@@ -1,41 +1,88 @@
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/providers/donation_provider.dart';
+import 'package:bpbd_jatim/screens/user/donation/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+TextEditingController amount = TextEditingController(text: "");
+TextEditingController note = TextEditingController(text: "");
+
 class DonationAmount extends StatelessWidget {
-  const DonationAmount({Key? key}) : super(key: key);
+  final String? disasterId;
+  final String? disasterName;
+
+  const DonationAmount({Key? key, this.disasterId, this.disasterName}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Nominal donasi',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            const SizedBox(height: 20),
-            const AmountCard(),
-            const SizedBox(height: 40),
-            Text(
-              'Catatan',
-              style: Theme.of(context).textTheme.headline6,
-            ),
-            const SizedBox(height: 20),
-            const NoteCard(),
-            const SizedBox(height: 40),
-            Button(
-              text: 'Lanjutkan',
-              press: () => Provider.of<DonationProvider>(context, listen: false).changeIndex(1),
-            ),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Theme.of(context).colorScheme.background,
+        elevation: 0,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              InkWell(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: SvgPicture.asset("assets/icons/back_black.svg"),
+              ),
+              Container(
+                margin: const EdgeInsets.only(left: 16.0),
+                child: Text(
+                  'Donasi',
+                  style: Theme.of(context).textTheme.headline5?.copyWith(
+                      color: Theme.of(context).colorScheme.surface),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Text(
+                'Nominal donasi',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              const SizedBox(height: 20),
+              const AmountCard(),
+              const SizedBox(height: 40),
+              Text(
+                'Catatan',
+                style: Theme.of(context).textTheme.headline6,
+              ),
+              const SizedBox(height: 20),
+              const NoteCard(),
+              const SizedBox(height: 40),
+              Button(
+                text: 'Lanjutkan',
+                press: () {
+                  // Provider.of<DonationProvider>(context, listen: false).changeIndex(1);
+                  // Provider.of<DonationProvider>(context, listen: false).changeDonationAmount(int.parse(amount.text));
+                  // Provider.of<DonationProvider>(context, listen: false).changeNote(note.text);
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => Checkout(
+                    donation: int.parse(amount.text),
+                    note: note.text,
+                    disasterId: disasterId,
+                    disasterName: disasterName,
+                  )));
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -50,8 +97,6 @@ class AmountCard extends StatefulWidget {
 }
 
 class _AmountCardState extends State<AmountCard> {
-  TextEditingController amount = TextEditingController(text: "");
-
   @override
   void initState() {
     super.initState();
@@ -117,11 +162,10 @@ class NoteCard extends StatefulWidget {
 }
 
 class _NoteCardState extends State<NoteCard> {
-  TextEditingController controller = TextEditingController(text: "");
   @override
   Widget build(BuildContext context) {
     return TextField(
-      controller: controller,
+      controller: note,
       maxLines: 8,
       style: Theme.of(context).textTheme.bodyText1,
       decoration: InputDecoration(

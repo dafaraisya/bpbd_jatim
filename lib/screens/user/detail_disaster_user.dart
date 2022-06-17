@@ -1,4 +1,5 @@
 import 'package:bpbd_jatim/components/label.dart';
+import 'package:bpbd_jatim/screens/user/donation/donation_amount.dart';
 import 'package:bpbd_jatim/screens/user/donation/donation_dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -110,29 +111,27 @@ class DetailDisasterUser extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Sumber Bantuan', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.add_circle_outline,
-                                    size: 16,
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                           const SizedBox(height: 10,),
+                          (snapshot.data as dynamic)['resourcesHelp'].length > 0 ?
                           Column(
                             children: List.generate((snapshot.data as dynamic)['resourcesHelp'].length, (index) => SumberBantuan(
                               accountName: (snapshot.data as dynamic)['resourcesHelp'][index]['accountName'],
                               personnel: (snapshot.data as dynamic)['resourcesHelp'][index]['personnel'],
                               totalPersonnel: (snapshot.data as dynamic)['resourcesHelp'][index]['totalPersonnel'],
                             ))
+                          ) : (
+                            Text('Data tidak ditemukan', textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary))
                           ),
                           const SizedBox(height: 20,),
                           Button(
                             press: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationDashboard()));
+                              // Navigator.push(context, MaterialPageRoute(builder: (_) => DonationDashboard(documentId: documentId, disasterName: (snapshot.data as dynamic)['disasterName'],)));
+                              Navigator.push(context, MaterialPageRoute(builder: (_) => DonationAmount(
+                                disasterId: documentId,
+                                disasterName: (snapshot.data as dynamic)['disasterName'],
+                              )));
                             },
                             text: 'Berikan Donasi',
                           ),
@@ -208,55 +207,35 @@ class SumberBantuan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Slidable(
-      key: const ValueKey(0),
-      endActionPane: ActionPane(
-        motion: const ScrollMotion(),
+    return Container(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: Column(
         children: [
-          SlidableAction(
-            onPressed: (context) {},
-            backgroundColor:const Color.fromARGB(255, 8, 214, 241),
-            foregroundColor: Colors.white,
-            icon: Icons.mode_edit_outlined,
+          Container(
+            alignment: Alignment.topLeft,
+            child: Text(
+              accountName!,
+              style: Theme.of(context).textTheme.subtitle1?.copyWith(
+                  color: Theme.of(context).colorScheme.surface),
+            ),
           ),
-          SlidableAction(
-            onPressed: (context) {},
-            backgroundColor: const Color.fromARGB(255, 246, 94, 109),
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
+          Container(
+            alignment: Alignment.topLeft,
+            child: Text(
+              personnel! + ' : ' + totalPersonnel! + 'personil',
+              style: Theme.of(context).textTheme.caption?.copyWith(
+                  color: Theme.of(context).colorScheme.secondary),
+            ),
           ),
+          Container(
+            margin: const EdgeInsets.only(top: 10.0),
+            child: const Divider(
+              color: Color.fromARGB(123, 143, 149, 157),
+              thickness: 1,
+              height: 0,
+            ),
+          )
         ],
-      ),
-      child: Container(
-        padding: const EdgeInsets.only(top: 10.0),
-        child: Column(
-          children: [
-            Container(
-              alignment: Alignment.topLeft,
-              child: Text(
-                accountName!,
-                style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                    color: Theme.of(context).colorScheme.surface),
-              ),
-            ),
-            Container(
-              alignment: Alignment.topLeft,
-              child: Text(
-                personnel! + ' : ' + totalPersonnel! + 'personil',
-                style: Theme.of(context).textTheme.caption?.copyWith(
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 10.0),
-              child: const Divider(
-                color: Color.fromARGB(123, 143, 149, 157),
-                thickness: 1,
-                height: 0,
-              ),
-            )
-          ],
-        ),
       ),
     );
   }

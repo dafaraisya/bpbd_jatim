@@ -2,7 +2,9 @@ import 'dart:io';
 
 import 'package:bpbd_jatim/components/app_grid.dart';
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
 import 'package:bpbd_jatim/screens/dashboard.dart';
+import 'package:bpbd_jatim/screens/user/detail_disaster_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
+import 'package:bpbd_jatim/globals.dart' as globals;
 import '../../components/app_card.dart';
 
 class DisasterData extends StatefulWidget {
@@ -86,8 +89,11 @@ class _DisasterDataState extends State<DisasterData> {
             'timeHour': timeHourController.text,
             'description': descriptionController.text,
             'status': statusController.text,
+            'disasterImage' : fileUrl,
             'disasterCategory' : disasterCategory,
-            'disasterImage' : fileUrl
+            'donations' : [],
+            'resourcesHelp' : [],
+            'totalDonation' : 0
           })
           .then((value) {
             _pc.close();
@@ -109,7 +115,11 @@ class _DisasterDataState extends State<DisasterData> {
           'timeHour': timeHourController.text,
           'description': descriptionController.text,
           'status': statusController.text,
-          'disasterImage' : ''
+          'disasterImage' : '',
+          'disasterCategory' : disasterCategory,
+          'donations' : [],
+          'resourcesHelp' : [],
+          'totalDonation' : 0
         })
         .then((value) => (uploadPhoto(imageFile!, date, value.id)))
         .catchError((error) => print("Failed : $error"));
@@ -119,7 +129,13 @@ class _DisasterDataState extends State<DisasterData> {
       }
     }
 
-    void _onTap() {}
+    void _onTap(String documentId) {
+      if(globals.isAdmin) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(documentId: documentId)));
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterUser(documentId: documentId)));
+      }
+    }
 
     return Scaffold(
       body: Stack(
@@ -161,7 +177,7 @@ class _DisasterDataState extends State<DisasterData> {
                     width: 128,
                     height: 36,
                     child: OutlinedButton(
-                      onPressed: _onTap,
+                      onPressed: () {},
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all(
                           RoundedRectangleBorder(
@@ -201,7 +217,9 @@ class _DisasterDataState extends State<DisasterData> {
                                   title: snapshot.data!.docs[index]["disasterName"],
                                   street: snapshot.data!.docs[index]["address"],
                                   date: formattedDate(snapshot.data!.docs[index]["date"]),
-                                  onTap: _onTap
+                                  onTap: () {
+                                    _onTap(snapshot.data!.docs[index].id);
+                                  }
                                 )
                               ),
                             );

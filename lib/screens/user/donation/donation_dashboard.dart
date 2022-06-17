@@ -1,14 +1,26 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:bpbd_jatim/providers/donation_provider.dart';
 import 'package:bpbd_jatim/screens/user/donation/checkout.dart';
 import 'package:bpbd_jatim/screens/user/donation/confirmation.dart';
 import 'package:bpbd_jatim/screens/user/donation/donation_amount.dart';
 import 'package:bpbd_jatim/screens/user/donation/finalization.dart';
+import 'package:bpbd_jatim/models/user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DonationDashboard extends StatefulWidget {
-  const DonationDashboard({Key? key}) : super(key: key);
+  final String documentId;
+  final String disasterName;
+
+  const DonationDashboard({
+    Key? key, 
+    required this.documentId,
+    required this.disasterName
+  }) : super(key: key);
 
   @override
   State<DonationDashboard> createState() => _DonationDashboardState();
@@ -21,6 +33,27 @@ class _DonationDashboardState extends State<DonationDashboard> {
     Confirmation(),
     Finalization(),
   ];
+
+  final donationProvider = DonationProvider();
+
+  getSharedPreferences() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    User user = User.fromJson(jsonDecode(preferences.getString('user')!));
+    setProviderData(user.id!, user.username!);
+  }
+
+  setProviderData(String userId, String username) {
+    Provider.of<DonationProvider>(context, listen: false).changeDisasterName(widget.disasterName);
+    Provider.of<DonationProvider>(context, listen: false).changeAccountName(username);
+    Provider.of<DonationProvider>(context, listen: false).changeAccountId(userId);
+    print(donationProvider.accountId);
+  }
+
+  @override
+  void initState() {
+    getSharedPreferences();
+    super.initState();
+  }
 
   void goBack() {
     setState(() {
