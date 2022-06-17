@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';

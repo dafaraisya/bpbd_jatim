@@ -1,8 +1,6 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bpbd_jatim/components/button.dart';
-import 'package:bpbd_jatim/providers/donation_provider.dart';
 import 'package:bpbd_jatim/screens/user/donation/finalization.dart';
 import 'package:bpbd_jatim/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/payment_list.dart';
 

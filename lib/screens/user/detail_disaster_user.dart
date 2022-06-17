@@ -1,10 +1,8 @@
 import 'package:bpbd_jatim/components/label.dart';
 import 'package:bpbd_jatim/screens/user/donation/donation_amount.dart';
-import 'package:bpbd_jatim/screens/user/donation/donation_dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
 
 import '../../components/button.dart';

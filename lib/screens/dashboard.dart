@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:bpbd_jatim/screens/admin/app_data.dart';
 import 'package:bpbd_jatim/screens/home.dart';
@@ -25,8 +24,6 @@ class _DashboardState extends State<Dashboard> {
       setState(() {
         user = jsonDecode(preferences.getString('user')!);
       });
-      print('user : wkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwk');
-      print(user['id']);
     }
   }
 

@@ -349,10 +349,10 @@ class _DisasterDataState extends State<DisasterData> {
                                         borderRadius: BorderRadius.circular(4),
                                         side: BorderSide(color: const Color(0xFFC4C4C4).withOpacity(0.25)))),
                                 padding: MaterialStateProperty.all(
-                                    EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+                                  const EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
                                 backgroundColor: MaterialStateProperty.all(const Color(0xFFC4C4C4).withOpacity(0.25)),
                                 textStyle: MaterialStateProperty.all(
-                                  TextStyle(fontWeight: FontWeight.w400,),
+                                  const TextStyle(fontWeight: FontWeight.w400,),
                                 )
                               ),
                               onPressed: () async{

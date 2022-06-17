@@ -1,11 +1,9 @@
 import 'package:bpbd_jatim/components/button.dart';
-import 'package:bpbd_jatim/providers/donation_provider.dart';
 import 'package:bpbd_jatim/screens/user/donation/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
 TextEditingController amount = TextEditingController(text: "");
 TextEditingController note = TextEditingController(text: "");

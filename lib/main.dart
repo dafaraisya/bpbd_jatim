@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
         title: 'Flutter Demo',
         theme: AppTheme.lightTheme,      
         builder: EasyLoading.init(),
-        home: user != null ? (user['privilege'] == 'admin' ? Dashboard() : Dashboard()) : SignIn(),
+        home: user != null ? (user['privilege'] == 'admin' ? const Dashboard() : const Dashboard()) : SignIn(),
       ),
     );
   }
