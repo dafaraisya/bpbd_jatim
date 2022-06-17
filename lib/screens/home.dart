@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:bpbd_jatim/components/app_card.dart';
@@ -20,11 +21,21 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Object? userRole = '';
-  getSharedPreferences() async {
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    userRole = preferences.getString('user');
-    log('$userRole');
+  late SharedPreferences preferences;
+  dynamic user = null;
+
+  void getUserData() async {
+    preferences = await SharedPreferences.getInstance();
+    if (preferences.getString('user') != null) {
+      setState((){
+        user = preferences.getString('user') != null ? jsonDecode(preferences.getString("user")!) : null;
+        if(user['privilege'] == 'admin') {
+          globals.isAdmin = true;
+        } else {
+          globals.isAdmin = false;
+        }
+      });
+    }
   }
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -91,8 +102,8 @@ class _HomeState extends State<Home> {
 
   @override
   void initState() {
+    getUserData();
     super.initState(); 
-    getSharedPreferences();
   }
 
   @override
@@ -138,7 +149,7 @@ class _HomeState extends State<Home> {
                       ),
                       const SizedBox(height: 10),
                       Text(
-                        'BPBD Jawa Timur',
+                        user != null ? user['username'] : 'Memuat...',
                         style: Theme.of(context).textTheme.headline5?.copyWith(
                               fontWeight: FontWeight.w600,
                             ),

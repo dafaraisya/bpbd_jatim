@@ -393,7 +393,7 @@ class _DisasterDataState extends State<DisasterData> {
                                       const Color(0xFFC4C4C4).withOpacity(0.25),
                                   // prefixIcon: const Icon(Icons.star),
                                   // prefixIconColor: Colors.amber,
-                                  hintText: "Titik Lokasi"),
+                                  hintText: "Alamat Bencana"),
                             ),
                           ),
                           Container(

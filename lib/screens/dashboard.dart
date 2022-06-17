@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:bpbd_jatim/screens/admin/app_data.dart';
@@ -17,10 +18,16 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  Object? userRole = '';
+  dynamic user;
   getSharedPreferences() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
-    userRole = preferences.getString('user');
+    if(preferences.getString('user') != null) {
+      setState(() {
+        user = jsonDecode(preferences.getString('user')!);
+      });
+      print('user : wkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwkwk');
+      print(user['id']);
+    }
   }
 
   @override
@@ -114,7 +121,7 @@ class _DashboardState extends State<Dashboard> {
       } else if (index == 2) {
         return const Profile();
       }
-      return const HistoryDonation();
+      return HistoryDonation(userId: user['id'],);
     }
   }
 

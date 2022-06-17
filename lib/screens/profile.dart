@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bpbd_jatim/screens/sign_in.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -34,6 +36,24 @@ class _ProfileState extends State<Profile> {
     Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) => SignIn()));
   }
 
+  late SharedPreferences preferences;
+  dynamic user = null;
+
+  void getUserData() async {
+    preferences = await SharedPreferences.getInstance();
+    if (preferences.getString('user') != null) {
+      setState((){
+        user = preferences.getString('user') != null ? jsonDecode(preferences.getString("user")!) : null;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    getUserData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,39 +68,39 @@ class _ProfileState extends State<Profile> {
             alignment: Alignment.center,
             child: userProfilePic()
           ),
-          globals.isAdmin ? const Padding(
-            padding: EdgeInsets.only(top: 18),
+          globals.isAdmin ? Padding(
+            padding: const EdgeInsets.only(top: 18),
             child: Text(
-              'BPBD Jawa Timur',
-              style: TextStyle(
+              user != null ? user['username'] : 'Memuat...',
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 color: Colors.black),
             ),
-          ) : const Padding(
-            padding: EdgeInsets.only(top: 18),
+          ) : Padding(
+            padding: const EdgeInsets.only(top: 18),
             child: Text(
-              'Samuel prasetya',
-              style: TextStyle(
+              user != null ? user['username'] : 'Memuat...',
+              style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
                 color: Colors.black),
             ),
           ),
-          globals.isAdmin ? const Align(
+          globals.isAdmin ? Align(
             alignment: Alignment.center,
             child: Text(
-              'Admin',
-              style: TextStyle(
+              user != null ? user['privilege'] : 'Memuat...',
+              style: const TextStyle(
                   color: Colors.black,
                   fontSize: 15,
                   fontWeight: FontWeight.w300),
             ),
-          ) : const Align(
+          ) : Align(
             alignment: Alignment.center,
             child: Text(
-              'User',
-              style: TextStyle(
+              user != null ? user['privilege'] : 'Memuat...',
+              style: const TextStyle(
                   color: Colors.black,
                   fontSize: 15,
                   fontWeight: FontWeight.w300),

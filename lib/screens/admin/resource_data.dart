@@ -1,18 +1,85 @@
+import 'dart:io';
+
 import 'package:bpbd_jatim/components/button.dart';
+import 'package:bpbd_jatim/screens/dashboard.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
+import 'package:path/path.dart';
 
-class ResourceData extends StatelessWidget {
+class ResourceData extends StatefulWidget {
   const ResourceData({Key? key}) : super(key: key);
 
   @override
+  State<ResourceData> createState() => _ResourceDataState();
+}
+
+class _ResourceDataState extends State<ResourceData> {
+  final PanelController _pc1 = PanelController();
+
+  FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+  String imageText = 'Upload Gambar';
+  File? imageFile;
+  
+  TextEditingController resourcesNameController = TextEditingController();
+  TextEditingController resourcesStatusController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
+    Future pickImage(ImageSource source) async {
+      final pickedFile = await ImagePicker().pickImage(source: source);
+      setState(() {
+        if (pickedFile != null) {
+          imageFile = File(pickedFile.path);
+          imageText = basename(imageFile!.path);
+        }
+      });
+      return imageFile;
+    }
+
+    Future uploadPhoto(File imageFile, String newDocumentId) async {
+      String fileName = basename(imageFile.path);
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child(fileName + DateTime.now().toString());
+      UploadTask uploadTask = ref.putFile(imageFile);
+      await uploadTask.whenComplete(() {
+        ref.getDownloadURL().then((fileUrl){
+          firestore.collection('resources').doc(newDocumentId).update({
+            'resourcesName': resourcesNameController.text,
+            'resourcesImage': fileUrl,
+            'status': resourcesStatusController.text
+          })
+          .then((value) {
+            _pc1.close();
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
+          })
+          .catchError((error) => print("Failed : $error"));
+        });
+      });
+    }
+
+    Future<void> createResourcesData() async {
+      try {
+        await firestore.collection('resources').add({
+          'resourcesName': resourcesNameController.text,
+          'resourcesImage': '',
+          'status': resourcesStatusController.text,
+        })
+        .then((value) => (uploadPhoto(imageFile!, value.id)))
+        .catchError((error) => print("Failed : $error"));
+      } catch (_) {
+        EasyLoading.showInfo('Failed');
+        return;
+      }
+    }
+
     void _onDownloadButtonPressed() {}
-
-    final PanelController _pc1 = PanelController();
-
     return Scaffold(
       body: Stack(
         children: [
@@ -79,11 +146,21 @@ class ResourceData extends StatelessWidget {
                   ),
                   const SizedBox(height: 24),
                   Expanded(
-                    child: ListView(
-                      children: [
-                        const ResourceCard(assetPath: 'assets/images/damkar_thumb.png'),
-                        const ResourceCard(assetPath: 'assets/images/dokter_thumb.png'),
-                      ],
+                    child: StreamBuilder(
+                      stream: FirebaseFirestore.instance
+                        .collection('resources')
+                        .snapshots(),
+                      builder: (context, AsyncSnapshot<QuerySnapshot>snapshot) {
+                        if(snapshot.hasData) {
+                          return ListView(
+                            children: List.generate(snapshot.data!.docs.length, (index) => ResourceCard(
+                              assetPath: snapshot.data!.docs[index]['resourcesImage'],
+                              resourcesName: snapshot.data!.docs[index]['resourcesName'],
+                            )),
+                          );
+                        }
+                        return const Text('Data tidak ditemukan');
+                      },
                     ),
                   ),
                   Padding(
@@ -152,55 +229,74 @@ class ResourceData extends StatelessWidget {
                         Container(
                           margin: const EdgeInsets.only(bottom: 18),
                           child: TextField(
+                            controller: resourcesNameController,
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                  borderSide: BorderSide.none,
+                              contentPadding: const EdgeInsets.only(left: 18),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(4),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor:
+                                  const Color(0xFFC4C4C4).withOpacity(0.25),
+                              hintText: "Nama Sumber Daya"),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(bottom: 18),
+                          width: MediaQuery.of(context).size.width,
+                          child: ElevatedButton(
+                            child: Row(
+                              children: [
+                                Text(
+                                  imageText,
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(color: Color(0xff686868), fontSize: 16),
                                 ),
-                                filled: true,
-                                fillColor:
-                                    const Color(0xFFC4C4C4).withOpacity(0.25),
-                                prefixIcon: const Icon(Icons.star),
-                                prefixIconColor: Colors.amber,
-                                hintText: "Nama Sumber Daya"),
+                              ],
+                            ),
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(0),
+                              shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(4),
+                                      side: BorderSide(color: const Color(0xFFC4C4C4).withOpacity(0.25)))),
+                              padding: MaterialStateProperty.all(
+                                  EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+                              backgroundColor: MaterialStateProperty.all(const Color(0xFFC4C4C4).withOpacity(0.25)),
+                              textStyle: MaterialStateProperty.all(
+                                TextStyle(fontWeight: FontWeight.w400,),
+                              )
+                            ),
+                            onPressed: () async{
+                              await pickImage(ImageSource.gallery);
+                            },
                           ),
                         ),
                         Container(
                           margin: const EdgeInsets.only(bottom: 18),
                           child: TextField(
+                            controller: resourcesStatusController,
+                            style: const TextStyle(color: Colors.black),
                             decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor:
-                                    const Color(0xFFC4C4C4).withOpacity(0.25),
-                                prefixIcon: const Icon(Icons.star),
-                                prefixIconColor: Colors.amber,
-                                hintText: "Upload Gambar"),
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(bottom: 18),
-                          child: TextField(
-                            decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(4),
-                                  borderSide: BorderSide.none,
-                                ),
-                                filled: true,
-                                fillColor:
-                                    const Color(0xFFC4C4C4).withOpacity(0.25),
-                                prefixIcon: const Icon(Icons.star),
-                                prefixIconColor: Colors.amber,
-                                hintText: "Status"),
+                              contentPadding: const EdgeInsets.only(left: 18),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(4),
+                                borderSide: BorderSide.none,
+                              ),
+                              filled: true,
+                              fillColor:
+                                  const Color(0xFFC4C4C4).withOpacity(0.25),
+                              hintText: "Status"),
                           ),
                         ),
                         SizedBox(
                           width: double.infinity,
                           child: Button(
-                            press: () => _pc1.open(),
+                            press: () {
+                              createResourcesData();
+                            },
                             text: "Tambah Data",
                           ),
                         )
@@ -221,9 +317,10 @@ class ResourceData extends StatelessWidget {
 }
 
 class ResourceCard extends StatelessWidget {
-  const ResourceCard({Key? key, this.assetPath}) : super(key: key);
+  const ResourceCard({Key? key, required this.assetPath, required this.resourcesName}) : super(key: key);
 
-  final String? assetPath;
+  final String assetPath;
+  final String resourcesName;
 
   @override
   Widget build(BuildContext context) {
@@ -245,18 +342,22 @@ class ResourceCard extends StatelessWidget {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Image.asset(
-                  assetPath!,
-                  width: 47,
-                  height: 44,
-                  fit: BoxFit.cover,
+                Container(
+                  height: 47,
+                  width: 44,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: NetworkImage(assetPath),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 15),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Damkar surabaya',
+                      resourcesName,
                       style: Theme.of(context).textTheme.bodyText1,
                     ),
                     const SizedBox(height: 3),
