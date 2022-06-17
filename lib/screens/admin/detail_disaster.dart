@@ -242,6 +242,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
                           (snapshot.data as dynamic)['resourcesHelp'].length > 0 ?
                           Column(
                             children: List.generate((snapshot.data as dynamic)['resourcesHelp'].length, (index) => SumberBantuan(
+                              documentId: widget.documentId,
                               accountName: (snapshot.data as dynamic)['resourcesHelp'][index]['accountName'],
                               personnel: (snapshot.data as dynamic)['resourcesHelp'][index]['personnel'],
                               totalPersonnel: (snapshot.data as dynamic)['resourcesHelp'][index]['totalPersonnel'],
@@ -325,12 +326,151 @@ class DetailImage extends StatelessWidget {
 }
 
 
-class SumberBantuan extends StatelessWidget {
+class SumberBantuan extends StatefulWidget {
+  final String? documentId;
   final String? accountName;
   final String? personnel;
   final String? totalPersonnel;
 
-  const SumberBantuan({ Key? key, this.accountName, this.personnel, this.totalPersonnel }) : super(key: key);
+  const SumberBantuan({ 
+    Key? key, 
+    this.documentId,
+    this.accountName, 
+    this.personnel, 
+    this.totalPersonnel 
+  }) : super(key: key);
+
+  @override
+  State<SumberBantuan> createState() => _SumberBantuanState();
+}
+
+class _SumberBantuanState extends State<SumberBantuan> {
+  TextEditingController editAccountNameController = TextEditingController();
+  TextEditingController editPersonnelController = TextEditingController();
+  TextEditingController editTotalPersonnelController = TextEditingController();
+  String? editAccountName;
+  String? editPersonnel;
+  String? editTotalPersonnel;
+
+  @override
+  void initState() {
+    editAccountNameController.text = widget.accountName!;
+    editPersonnelController.text = widget.personnel!;
+    editTotalPersonnelController.text = widget.totalPersonnel!;
+    super.initState();
+  }
+
+  Future<void> deleteResourcesHelp() async {
+    try {
+      await firestore
+        .collection('disasters')
+        .doc(widget.documentId)
+        .update({
+          'resourcesHelp': FieldValue.arrayRemove([
+            {
+              'accountName': widget.accountName,
+              'personnel' : widget.personnel,
+              'totalPersonnel' : widget.totalPersonnel
+            }
+          ])
+        });
+    } catch (_) {
+      EasyLoading.showInfo('Failed');
+      return;
+    }
+  }
+
+  Future<void> updateResourcesHelp() async {
+    try {
+      await firestore
+        .collection('disasters')
+        .doc(widget.documentId)
+        .update({
+          'resourcesHelp': FieldValue.arrayUnion([{
+            'accountName': editAccountNameController.text,
+            'personnel' : editPersonnelController.text,
+            'totalPersonnel' : editTotalPersonnelController.text
+          }])
+        });
+    } catch (_) {
+      EasyLoading.showInfo('Failed');
+      return;
+    }
+  }
+
+  Future<void> updateResourcesDialog(BuildContext context) async {
+    return showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Ubah Sumber Bantuan'),
+          content: SizedBox(
+            height: 150.0,
+            child: Column(
+              children: [
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      editAccountName = value;
+                    });
+                  },
+                  style: const TextStyle(
+                    color: Colors.black
+                  ),
+                  controller: editAccountNameController,
+                  decoration: const InputDecoration(hintText: "Masukkan Instansi Pemberi Bantuan",),
+                ),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      editPersonnel = value;
+                    });
+                  },
+                  style: const TextStyle(
+                    color: Colors.black
+                  ),
+                  controller: editPersonnelController,
+                  decoration: const InputDecoration(hintText: "Masukkan Bentuk Bantuan",),
+                ),
+                TextField(
+                  onChanged: (value) {
+                    setState(() {
+                      editTotalPersonnel = value;
+                    });
+                  },
+                  style: const TextStyle(
+                    color: Colors.black
+                  ),
+                  controller: editTotalPersonnelController,
+                  decoration: const InputDecoration(hintText: "Masukkan Jumlah Bentuk Bantuan",),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              color: Theme.of(context).colorScheme.secondaryContainer,
+              textColor: Colors.white,
+              child: const Text('Batalkan'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            FlatButton(
+              color: Theme.of(context).colorScheme.primary,
+              textColor: Colors.white,
+              child: const Text('Simpan'),
+              onPressed: () {
+                deleteResourcesHelp();
+                updateResourcesHelp();
+                Navigator.pop(context);
+              },
+            ),
+
+          ],
+        );
+      });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -340,13 +480,17 @@ class SumberBantuan extends StatelessWidget {
         motion: const ScrollMotion(),
         children: [
           SlidableAction(
-            onPressed: (context) {},
+            onPressed: (context) {
+              updateResourcesDialog(context);
+            },
             backgroundColor:const Color.fromARGB(255, 8, 214, 241),
             foregroundColor: Colors.white,
             icon: Icons.mode_edit_outlined,
           ),
           SlidableAction(
-            onPressed: (context) {},
+            onPressed: (context) {
+              deleteResourcesHelp();
+            },
             backgroundColor: const Color.fromARGB(255, 246, 94, 109),
             foregroundColor: Colors.white,
             icon: Icons.delete,
@@ -360,7 +504,7 @@ class SumberBantuan extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Text(
-                accountName!,
+                widget.accountName!,
                 style: Theme.of(context).textTheme.subtitle1?.copyWith(
                     color: Theme.of(context).colorScheme.surface),
               ),
@@ -368,7 +512,7 @@ class SumberBantuan extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               child: Text(
-                personnel! + ' : ' + totalPersonnel! + 'personil',
+                widget.personnel! + ' : ' + widget.totalPersonnel! + ' personil',
                 style: Theme.of(context).textTheme.caption?.copyWith(
                     color: Theme.of(context).colorScheme.secondary),
               ),
@@ -432,14 +576,6 @@ class DonasiPengguna extends StatelessWidget {
                             color: Theme.of(context).colorScheme.secondary),
                       ),
                     ),
-                    // InkWell(
-                    //   onTap: () {},
-                    //   child: Text(
-                    //     'Lihat bukti >',
-                    //     style: Theme.of(context).textTheme.subtitle1?.copyWith(
-                    //         color: Theme.of(context).colorScheme.primary),
-                    //   ),
-                    // )
                   ],
                 ),
               ],
