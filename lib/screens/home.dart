@@ -184,31 +184,34 @@ class _HomeState extends State<Home> {
                           'Data bencana',
                           style: Theme.of(context).textTheme.bodyText1,
                         ),
-                        InkWell(
-                          onTap: () {
-                            createCategoryDialog(context);
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.add_circle_outline,
-                                size: 16,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                'Tambah kategori',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .caption
-                                    ?.copyWith(
-                                      color:
-                                          Theme.of(context).colorScheme.primary,
-                                    ),
-                              ),
-                            ],
-                          ),
-                        ),
+                        user != null ? (
+                          user['privilege'] != 'admin' ? Container() : 
+                          InkWell(
+                            onTap: () {
+                              createCategoryDialog(context);
+                            },
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.add_circle_outline,
+                                  size: 16,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                                const SizedBox(width: 5),
+                                Text(
+                                  'Tambah kategori',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .caption
+                                      ?.copyWith(
+                                        color:
+                                            Theme.of(context).colorScheme.primary,
+                                      ),
+                                ),
+                              ],
+                            ),
+                          )
+                        ) : const Text('Memuat...'),
                       ],
                     ),
                     const SizedBox(width: 15),
