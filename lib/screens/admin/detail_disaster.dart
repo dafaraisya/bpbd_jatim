@@ -31,6 +31,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
   String? accountName;
   String? personnel;
   String? totalPersonnel;
+  String? status;
 
   Future<void> createResourcesHelp() async {
     try {
@@ -125,6 +126,21 @@ class _DetailDisasterState extends State<DetailDisaster> {
       });
   }
 
+  Future<void> updateStatus(String currentStatus) async{
+    currentStatus == 'Aktif' ? status = 'Tidak Aktif' : status = 'Aktif';
+    try {
+      await firestore
+        .collection('disasters')
+        .doc(widget.documentId)
+        .update({
+          'status': status
+        });
+    } catch (_) {
+      EasyLoading.showInfo('Failed');
+      return;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -177,7 +193,12 @@ class _DetailDisasterState extends State<DetailDisaster> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Deskripsi', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                              Label(text: (snapshot.data as dynamic)['status'],)
+                              InkWell(
+                                onTap: () {
+                                  updateStatus((snapshot.data as dynamic)['status']);
+                                },
+                                child: Label(text: (snapshot.data as dynamic)['status'],),
+                              )
                             ],
                           ),
                           const SizedBox(height: 20,),

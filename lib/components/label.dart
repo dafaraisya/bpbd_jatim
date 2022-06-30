@@ -10,7 +10,7 @@ class Label extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 18.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
-        color: Theme.of(context).colorScheme.primary,
+        color: text == 'Aktif' ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary,
       ),
       child: Center(
         child: Text(

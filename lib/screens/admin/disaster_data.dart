@@ -496,3 +496,14 @@ class _DisasterDataState extends State<DisasterData> {
     );
   }
 }
+
+class PickLocation extends StatelessWidget {
+  const PickLocation({ Key? key }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      
+    );
+  }
+}
