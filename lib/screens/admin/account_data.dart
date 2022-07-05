@@ -38,32 +38,6 @@ class AccountData extends StatelessWidget {
                   ],
                 ),
               ),
-              Container(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16),
-                alignment: Alignment.centerLeft,
-                child: SizedBox(
-                  width: 128,
-                  height: 36,
-                  child: OutlinedButton(
-                    onPressed: _onDownloadButtonPressed,
-                    style: ButtonStyle(
-                      shape: MaterialStateProperty.all(
-                        RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(4.0),
-                        ),
-                      ),
-                    ),
-                    child: Center(
-                      child: Text(
-                        "Download Data",
-                        style: Theme.of(context).textTheme.bodyText2?.copyWith(
-                            color: Theme.of(context).colorScheme.surface),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
               Expanded(
                 child: StreamBuilder(
                   stream: FirebaseFirestore.instance
@@ -73,41 +47,15 @@ class AccountData extends StatelessWidget {
                     if(snapshot.hasData) {
                       return ListView(
                         children: List.generate(snapshot.data!.docs.length, (index) => UserCard(
+                          documentId: snapshot.data!.docs[index].id,
                           name: snapshot.data!.docs[index]['username'], 
                           role: snapshot.data!.docs[index]['privilege'], 
                           email: snapshot.data!.docs[index]['email'], 
                           phone: snapshot.data!.docs[index]['phone'], 
-                          onTap: () {}
                         )),
-                        // children: [
-                        //   UserCard(
-                        //       name: "BPBD Jatim",
-                        //       role: "Admin",
-                        //       email: "bpbdjatim@gmail.com",
-                        //       phone: "0856 - 5658 - 8975",
-                        //       onTap: _onDownloadButtonPressed),
-                        //   UserCard(
-                        //       name: "Relawan Sidoarjo",
-                        //       role: "User",
-                        //       email: "relawan@gmail.com",
-                        //       phone: "0856 - 5658 - 8975",
-                        //       onTap: _onDownloadButtonPressed),
-                        //   UserCard(
-                        //       name: "TNI AD",
-                        //       role: "User",
-                        //       email: "TNIADRI@gmail.com",
-                        //       phone: "0856 - 5658 - 8975",
-                        //       onTap: _onDownloadButtonPressed),
-                        //   UserCard(
-                        //       name: "Polrestabes Surabaya",
-                        //       role: "User",
-                        //       email: "Polressby@gmail.com",
-                        //       phone: "0856 - 5658 - 8975",
-                        //       onTap: _onDownloadButtonPressed),
-                        // ],
                       );
                     }
-                    return const Text('Data tidak ditemuka');
+                    return const Text('Data tidak ditemukan');
                   },
                 ),
               ),

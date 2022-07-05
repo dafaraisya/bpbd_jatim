@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/components/app_grid.dart';
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
@@ -15,7 +16,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart';
 import 'package:bpbd_jatim/globals.dart' as globals;
-import '../../components/app_card.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class DisasterData extends StatefulWidget {
   const DisasterData({Key? key}) : super(key: key);
@@ -43,6 +47,8 @@ class _DisasterDataState extends State<DisasterData> {
   final statusController = TextEditingController();
 
   String disasterCategory = 'Pilih Kategori Bencana';
+
+  List<List<String>> itemList = [];
 
   @override
   void dispose() {
@@ -129,6 +135,80 @@ class _DisasterDataState extends State<DisasterData> {
       }
     }
 
+    Future<bool> _requestPermission(Permission permission) async{
+      if(await permission.isGranted) {
+        return true;
+      } else {
+        var result = await permission.request();
+        if(result == PermissionStatus.granted) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+
+    Future<void> downloadExcelFormat() async{
+      QuerySnapshot allDisasterData = await firestore.collection('disasters').get();
+
+      final xlsio.Workbook workbook = xlsio.Workbook();
+      final xlsio.Worksheet sheet = workbook.worksheets[0];
+      sheet.getRangeByName('A1').setText('No.');
+      sheet.getRangeByName('B1').setText('Nama Bencana');
+      sheet.getRangeByName('C1').setText('Kategori Bencana');
+      sheet.getRangeByName('D1').setText('Alamat Bencana');
+      sheet.getRangeByName('E1').setText('Tanggal Bencana');
+      sheet.getRangeByName('F1').setText('Jam Bencana');
+      sheet.getRangeByName('G1').setText('Deskripsi Bencana');
+      sheet.getRangeByName('I1').setText('Total Donasi');
+      sheet.getRangeByName('J1').setText('status');
+
+      for (int i = 0; i < allDisasterData.docs.length; i++) {
+        sheet.getRangeByName('A${i+2}').setText("${i+1}");
+        sheet.getRangeByName('B${i+2}').setText(allDisasterData.docs[i]["disasterName"].toString());
+        sheet.getRangeByName('C${i+2}').setText(allDisasterData.docs[i]["disasterCategory"].toString());
+        sheet.getRangeByName('D${i+2}').setText(allDisasterData.docs[i]["address"].toString());
+        sheet.getRangeByName('E${i+2}').setText(formattedDate(allDisasterData.docs[i]["date"]));
+        sheet.getRangeByName('F${i+2}').setText(allDisasterData.docs[i]["timeHour"].toString());
+        sheet.getRangeByName('G${i+2}').setText(allDisasterData.docs[i]["description"].toString());
+        sheet.getRangeByName('I${i+2}').setText(allDisasterData.docs[i]["totalDonation"].toString());
+        sheet.getRangeByName('J${i+2}').setText(allDisasterData.docs[i]["status"].toString());
+      }  
+
+      final List<int> bytes = workbook.saveAsStream();
+      workbook.dispose();
+
+      Directory? directory;
+      try {
+        if(await _requestPermission(Permission.storage)) {
+          directory = await getExternalStorageDirectory();
+          String newPath = "";
+          List<String> folders = directory!.path.split("/");
+          for(int x = 1; x < folders.length; x++) {
+            String folder = folders[x];
+            if(folder != "Android") {
+              newPath += "/"+folder;
+            } else {
+              break;
+            }
+          }
+          newPath = newPath+"/DataBencanaBPBDJatim";
+          directory = Directory(newPath);
+        } 
+
+        if(!await directory!.exists()) {
+          await directory.create(recursive: true);
+        }
+      } catch(e) {
+        print(e);
+      }
+
+      final File file = File(directory!.path+"/data_bencana.xlsx");
+      await file.writeAsBytes(bytes, flush: true).then((value) => {
+        OpenFile.open(directory!.path+"/data_bencana.xlsx")
+      });
+    }
+
     void _onTap(String documentId) {
       if(globals.isAdmin) {
         Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(documentId: documentId)));
@@ -177,7 +257,9 @@ class _DisasterDataState extends State<DisasterData> {
                     width: 128,
                     height: 36,
                     child: OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        downloadExcelFormat();
+                      },
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all(
                           RoundedRectangleBorder(

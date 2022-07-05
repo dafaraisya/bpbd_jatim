@@ -1,4 +1,5 @@
 import 'package:bpbd_jatim/components/label.dart';
+import 'package:bpbd_jatim/screens/dashboard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -31,7 +32,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
   String? accountName;
   String? personnel;
   String? totalPersonnel;
-  String? status;
+  String status = '';
 
   Future<void> createResourcesHelp() async {
     try {
@@ -44,6 +45,8 @@ class _DetailDisasterState extends State<DetailDisaster> {
             'personnel' : personnel,
             'totalPersonnel' : totalPersonnel
           }])
+        }).then((value) => {
+          getDocument()
         });
     } catch (_) {
       EasyLoading.showInfo('Failed');
@@ -141,6 +144,52 @@ class _DetailDisasterState extends State<DetailDisaster> {
     }
   }
 
+  Future<void> deleteDisaster(BuildContext context) async{
+    try {
+      await firestore
+        .collection('disasters')
+        .doc(widget.documentId)
+        .delete()
+        .then((value) => {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()))
+        });
+    } catch (_) {
+      EasyLoading.showInfo('Failed');
+      return;
+    }
+  }
+  String disasterImage = '';
+  String address = '';
+  String date = '';
+  String description = '';
+  String disasterName = '';
+  String timeHour = '';
+  String totalDonation = '';
+  List donations = [];
+  List resourcesHelp = [];
+
+  Future<void> getDocument() async{
+    DocumentSnapshot disasterDocument = await firestore.collection("disasters").doc(widget.documentId).get();
+    setState(() {
+      disasterImage = (disasterDocument.data() as dynamic)['disasterImage']; 
+      address = (disasterDocument.data() as dynamic)['address']; 
+      date = formattedDate((disasterDocument.data() as dynamic)['date']); 
+      description = (disasterDocument.data() as dynamic)['description']; 
+      disasterName = (disasterDocument.data() as dynamic)['disasterName']; 
+      status = (disasterDocument.data() as dynamic)['status']; 
+      timeHour = (disasterDocument.data() as dynamic)['timeHour']; 
+      totalDonation = (disasterDocument.data() as dynamic)['totalDonation'].toString(); 
+      donations = (disasterDocument.data() as dynamic)['donations']; 
+      resourcesHelp = (disasterDocument.data() as dynamic)['resourcesHelp']; 
+    });
+  }
+
+  @override
+  void initState() {
+    getDocument();
+    super.initState();
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,7 +202,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
           if(snapshot.hasData) {
             return Stack(
               children: [
-                DetailImage(imageUrl: (snapshot.data as dynamic)['disasterImage']),
+                DetailImage(imageUrl: disasterImage,),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(
@@ -173,21 +222,29 @@ class _DetailDisasterState extends State<DetailDisaster> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text((snapshot.data as dynamic)['disasterName'], style: Theme.of(context).textTheme.headline5,),
-                              InkWell(
-                                onTap: () {},
-                                child: Container(
-                                  padding: const EdgeInsets.all(3),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(5),
-                                    border: Border.all(color: Colors.grey)
-                                  ),
-                                  child: const Icon(Icons.more_horiz_outlined),
+                              Text(disasterName, style: Theme.of(context).textTheme.headline5,),
+                              PopupMenuButton(
+                                color: const Color.fromARGB(255, 253, 13, 13),
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.all(Radius.circular(15.0))
                                 ),
-                              )
+                                itemBuilder: (_) => [
+                                  PopupMenuItem(
+                                    onTap: () {
+                                      deleteDisaster(context);
+                                    },
+                                    child: Row(
+                                      children: const [
+                                        Icon(Icons.delete, color: Colors.white,),
+                                        Text(' Delete')
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
-                          Text((snapshot.data as dynamic)['address'], style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+                          Text(address, style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary)),
                           const SizedBox(height: 30,),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,14 +252,15 @@ class _DetailDisasterState extends State<DetailDisaster> {
                               Text('Deskripsi', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
                               InkWell(
                                 onTap: () {
-                                  updateStatus((snapshot.data as dynamic)['status']);
+                                  updateStatus(status);
+                                  // updateStatus((snapshot.data as dynamic)['status']);
                                 },
-                                child: Label(text: (snapshot.data as dynamic)['status'],),
+                                child: Label(text: status,),
                               )
                             ],
                           ),
                           const SizedBox(height: 20,),
-                          Text((snapshot.data as dynamic)['description'], textAlign: TextAlign.justify,),
+                          Text(description, textAlign: TextAlign.justify,),
                           const SizedBox(height: 15,),
                           Row(
                             children: [
@@ -212,7 +270,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                formattedDate((snapshot.data as dynamic)['date']),
+                                date,
                                 style: const TextStyle(color: Colors.black, fontSize: 15),
                               ),
                             ],
@@ -226,7 +284,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
                               ),
                               const SizedBox(width: 10,),
                               Text(
-                                (snapshot.data as dynamic)['timeHour'] + ' WIB',
+                                timeHour + ' WIB',
                                 style: const TextStyle(color: Colors.black, fontSize: 15),
                               ),
                             ],
@@ -260,13 +318,13 @@ class _DetailDisasterState extends State<DetailDisaster> {
                             ],
                           ),
                           const SizedBox(height: 10,),
-                          (snapshot.data as dynamic)['resourcesHelp'].length > 0 ?
+                          resourcesHelp.length > 0 ?
                           Column(
-                            children: List.generate((snapshot.data as dynamic)['resourcesHelp'].length, (index) => SumberBantuan(
+                            children: List.generate(resourcesHelp.length, (index) => SumberBantuan(
                               documentId: widget.documentId,
-                              accountName: (snapshot.data as dynamic)['resourcesHelp'][index]['accountName'],
-                              personnel: (snapshot.data as dynamic)['resourcesHelp'][index]['personnel'],
-                              totalPersonnel: (snapshot.data as dynamic)['resourcesHelp'][index]['totalPersonnel'],
+                              accountName: resourcesHelp[index]['accountName'],
+                              personnel: resourcesHelp[index]['personnel'],
+                              totalPersonnel: resourcesHelp[index]['totalPersonnel'],
                             ))
                           ) : (
                             Text('Data tidak ditemukan', textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary))
@@ -276,13 +334,13 @@ class _DetailDisasterState extends State<DetailDisaster> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text('Donasi Pengguna', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
-                              Text('Rp.' + (snapshot.data as dynamic)['totalDonation'].toString(), style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.primary)),
+                              Text('Rp.' + totalDonation, style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.primary)),
                             ],
                           ),
                           const SizedBox(height: 10,),
                           Column(
-                            children: List.generate((snapshot.data as dynamic)['donations'].length, (index) => DonasiPengguna(
-                              documentId: (snapshot.data as dynamic)['donations'][index],
+                            children: List.generate(donations.length, (index) => DonasiPengguna(
+                              documentId: donations[index],
                             )),
                           ),
                         ],
@@ -394,6 +452,8 @@ class _SumberBantuanState extends State<SumberBantuan> {
               'totalPersonnel' : widget.totalPersonnel
             }
           ])
+        }).then((value) => {
+          Navigator.pop(context)
         });
     } catch (_) {
       EasyLoading.showInfo('Failed');
@@ -412,6 +472,8 @@ class _SumberBantuanState extends State<SumberBantuan> {
             'personnel' : editPersonnelController.text,
             'totalPersonnel' : editTotalPersonnelController.text
           }])
+        }).then((value) => {
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()))
         });
     } catch (_) {
       EasyLoading.showInfo('Failed');

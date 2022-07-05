@@ -344,7 +344,9 @@ class DisasterDataList extends StatelessWidget {
                   date: formattedDate(snapshot.data!.docs[index]["date"]),
                   onTap: () {
                     if(globals.isAdmin) {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(documentId: snapshot.data!.docs[index].id)));
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(
+                        documentId: snapshot.data!.docs[index].id
+                      )));
                     } else {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterUser(documentId: snapshot.data!.docs[index].id)));
                     }

@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:image_picker/image_picker.dart';
@@ -72,14 +73,15 @@ class _ResourceDataState extends State<ResourceData> {
           'status': resourcesStatusController.text,
         })
         .then((value) => (uploadPhoto(imageFile!, value.id)))
-        .catchError((error) => print("Failed : $error"));
+        .catchError((error) => {
+          EasyLoading.showInfo('Failed')
+        });
       } catch (_) {
         EasyLoading.showInfo('Failed');
         return;
       }
     }
 
-    void _onDownloadButtonPressed() {}
     return Scaffold(
       body: Stack(
         children: [
@@ -116,35 +118,6 @@ class _ResourceDataState extends State<ResourceData> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: SizedBox(
-                      width: 148,
-                      height: 36,
-                      child: OutlinedButton(
-                        onPressed: _onDownloadButtonPressed,
-                        style: ButtonStyle(
-                          shape: MaterialStateProperty.all(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(4.0),
-                            ),
-                          ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            "Download Data",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyText1
-                                ?.copyWith(
-                                    color:
-                                        Theme.of(context).colorScheme.surface),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
                   Expanded(
                     child: StreamBuilder(
                       stream: FirebaseFirestore.instance
@@ -154,6 +127,7 @@ class _ResourceDataState extends State<ResourceData> {
                         if(snapshot.hasData) {
                           return ListView(
                             children: List.generate(snapshot.data!.docs.length, (index) => ResourceCard(
+                              documentId: snapshot.data!.docs[index].id,
                               assetPath: snapshot.data!.docs[index]['resourcesImage'],
                               resourcesName: snapshot.data!.docs[index]['resourcesName'],
                             )),
@@ -317,64 +291,92 @@ class _ResourceDataState extends State<ResourceData> {
 }
 
 class ResourceCard extends StatelessWidget {
-  const ResourceCard({Key? key, required this.assetPath, required this.resourcesName}) : super(key: key);
+  const ResourceCard({Key? key, required this.documentId, required this.assetPath, required this.resourcesName}) : super(key: key);
 
+  final String documentId;
   final String assetPath;
   final String resourcesName;
 
+  Future<void> deleteResourceData() async{
+    try {
+      FirebaseFirestore.instance
+        .collection('resources')
+        .doc(documentId)
+        .delete();
+    } catch (error) {
+      EasyLoading.showInfo("Failed");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            width: 1,
-            color: Theme.of(context).colorScheme.secondary,
+    return Slidable(
+      key: const ValueKey(0),
+      endActionPane: ActionPane(
+        motion: const ScrollMotion(),
+        children: [
+          SlidableAction(
+            onPressed: (context) {
+              deleteResourceData();
+            },
+            backgroundColor: const Color.fromARGB(255, 246, 94, 109),
+            foregroundColor: Colors.white,
+            icon: Icons.delete,
+          ),
+        ],
+      ),
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              width: 1,
+              color: Theme.of(context).colorScheme.secondary,
+            ),
           ),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 47,
-                  width: 44,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: NetworkImage(assetPath),
-                      fit: BoxFit.cover,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    height: 47,
+                    width: 44,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: NetworkImage(assetPath),
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 15),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      resourcesName,
-                      style: Theme.of(context).textTheme.bodyText1,
-                    ),
-                    const SizedBox(height: 3),
-                    Text(
-                      'Aktif',
-                      style: Theme.of(context).textTheme.caption?.copyWith(
-                            color: Theme.of(context).colorScheme.secondary,
-                          ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            const CustomSwitch(),
-          ],
+                  const SizedBox(width: 15),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        resourcesName,
+                        style: Theme.of(context).textTheme.bodyText1,
+                      ),
+                      const SizedBox(height: 3),
+                      Text(
+                        'Aktif',
+                        style: Theme.of(context).textTheme.caption?.copyWith(
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const CustomSwitch(),
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
 }
