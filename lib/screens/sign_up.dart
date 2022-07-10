@@ -25,8 +25,11 @@ class _SignUpState extends State<SignUp> {
   TextEditingController agencyController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  TextEditingController passwordConfirmationController =
-      TextEditingController();
+  TextEditingController passwordConfirmationController = TextEditingController();
+
+  String? roleCategory = 'Pilih Role User';
+
+  int width = 0; 
 
   Widget firstForm() {
     return Column(
@@ -109,6 +112,56 @@ class _SignUpState extends State<SignUp> {
                   borderRadius: BorderRadius.circular(8.0),
                 ),
                 hintText: 'Enter phone number'),
+          ),
+        ),
+        // Phone Number
+        Container(
+          alignment: Alignment.topLeft,
+          padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+          child: Text(
+            'Select Role',
+            style: TextStyle(color: secondaryColor),
+          )
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 6.0),
+          child: DecoratedBox(
+            decoration: BoxDecoration( 
+              color:const Color.fromARGB(255, 255, 255, 255).withOpacity(0.25), 
+              borderRadius: BorderRadius.circular(8.0), 
+              border: Border.all(color: Colors.grey)
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(left: 14.0),
+              child: DropdownButton<String>(
+                isExpanded: true,
+                value: roleCategory,
+                style: const TextStyle(  
+                  color: Colors.black, 
+                  fontSize: 16
+                ),
+                onChanged: (newValue) {
+                  setState(() {
+                    roleCategory = newValue!;
+                    formBody = firstForm();
+                  });
+                },
+                items: const [
+                  DropdownMenuItem(
+                    child: Text('Pilih Role User'),
+                    value: 'Pilih Role User',
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Pengguna Umum'),
+                    value: 'user',
+                  ),
+                  DropdownMenuItem(
+                    child: Text('Instansi'),
+                    value: 'instansi',
+                  ),
+                ] 
+              ),
+            ),
           ),
         ),
         const SizedBox(
@@ -219,7 +272,7 @@ class _SignUpState extends State<SignUp> {
                   return;
                 }
 
-                await signUp(usernameController.text, agencyController.text, phoneNumberController.text, emailController.text, passwordController.text, passwordConfirmationController.text);
+                await signUp(usernameController.text, agencyController.text, phoneNumberController.text, emailController.text, roleCategory!, passwordController.text, passwordConfirmationController.text);
               },
               text: 'Register',
             )),
@@ -227,11 +280,12 @@ class _SignUpState extends State<SignUp> {
     );
   }
 
-  Future<void> signUp(String username, String agency, String phoneNumber, String email, String password, String passwordConfirmation) async {
+  Future<void> signUp(String username, String agency, String phoneNumber, String email, String privilege, String password, String passwordConfirmation) async {
     if (username.isEmpty ||
         agency.isEmpty ||
         phoneNumber.isEmpty ||
         email.isEmpty ||
+        privilege.isEmpty ||
         password.isEmpty ||
         password.isEmpty) {
       EasyLoading.showInfo('Fill all the field!');
@@ -250,7 +304,7 @@ class _SignUpState extends State<SignUp> {
         'phone': phoneNumberController.text,
         'email': emailController.text,
         'password': passwordController.text,
-        'privilege': 'user'
+        'privilege': roleCategory
       });
     } catch (_) {
       EasyLoading.showInfo('Sign Up failed');
@@ -269,6 +323,7 @@ class _SignUpState extends State<SignUp> {
 
   @override
   Widget build(BuildContext context) {
+    width = MediaQuery.of(context).size.width.toInt();
     return Scaffold(
         resizeToAvoidBottomInset: true,
         body: Stack(

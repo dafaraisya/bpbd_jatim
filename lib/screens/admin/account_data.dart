@@ -10,7 +10,6 @@ class AccountData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _onDownloadButtonPressed() {}
 
     return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.background,

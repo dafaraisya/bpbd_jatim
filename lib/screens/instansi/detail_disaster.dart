@@ -9,16 +9,16 @@ import 'package:intl/intl.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-class DetailDisaster extends StatefulWidget {
+class DetailDisasterInstansi extends StatefulWidget {
   final String documentId;
 
-  const DetailDisaster({ Key? key, required this.documentId }) : super(key: key);
+  const DetailDisasterInstansi({ Key? key, required this.documentId }) : super(key: key);
 
   @override
-  State<DetailDisaster> createState() => _DetailDisasterState();
+  State<DetailDisasterInstansi> createState() => _DetailDisasterInstansiState();
 }
 
-class _DetailDisasterState extends State<DetailDisaster> {
+class _DetailDisasterInstansiState extends State<DetailDisasterInstansi> {
   String formattedDate (date) {      
     dynamic dateData = date;
     final birthDate = DateTime.fromMicrosecondsSinceEpoch(dateData.microsecondsSinceEpoch);
@@ -34,34 +34,42 @@ class _DetailDisasterState extends State<DetailDisaster> {
   String? totalPersonnel;
   String status = '';
 
-  String disasterImage = '';
-  String address = '';
-  String date = '';
-  String description = '';
-  String disasterName = '';
-  String timeHour = '';
-  String totalDonation = '';
-  List donations = [];
-  List resourcesHelp = [];
-
   Future<void> createResourcesHelp() async {
     try {
       await firestore
-        .collection('disasters')
-        .doc(widget.documentId)
-        .update({
-          'resourcesHelp': FieldValue.arrayUnion([{
-            'accountName': accountName,
-            'personnel' : personnel,
-            'totalPersonnel' : totalPersonnel
-          }])
-        }).then((value) => {
-          getDocument()
+        .collection('resourcesHelp')
+        .add({
+          'disasterId': widget.documentId,
+          'disasterName': disasterName,
+          'accountName': accountName,
+          'personnel': personnel,
+          'totalPersonnel': totalPersonnel,
+          'status': 'Waiting Verification'
+        }).then((value) {
+          EasyLoading.showInfo('Waiting admin to verify');
+          getDocument();
         });
     } catch (_) {
       EasyLoading.showInfo('Failed');
       return;
     }
+    // try {
+    //   await firestore
+    //     .collection('disasters')
+    //     .doc(widget.documentId)
+    //     .update({
+    //       'resourcesHelp': FieldValue.arrayUnion([{
+    //         'accountName': accountName,
+    //         'personnel' : personnel,
+    //         'totalPersonnel' : totalPersonnel
+    //       }])
+    //     }).then((value) => {
+    //       getDocument()
+    //     });
+    // } catch (_) {
+    //   EasyLoading.showInfo('Failed');
+    //   return;
+    // }
   }
 
   Future<void> createCategoryDialog(BuildContext context) async {
@@ -161,30 +169,22 @@ class _DetailDisasterState extends State<DetailDisaster> {
         .doc(widget.documentId)
         .delete()
         .then((value) => {
-          deleteDonation()
+          Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()))
         });
     } catch (_) {
       EasyLoading.showInfo('Failed');
       return;
     }
   }
-
-  Future<void> deleteDonation() async{
-    for(int i = 0; i < donations.length; i++) {
-      try {
-        await firestore
-          .collection('donations')
-          .doc(donations[i])
-          .delete()
-          .then((value) => {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()))
-          });
-      } catch (_) {
-        EasyLoading.showInfo('Failed');
-        return;
-      }
-    }
-  }
+  String disasterImage = '';
+  String address = '';
+  String date = '';
+  String description = '';
+  String disasterName = '';
+  String timeHour = '';
+  String totalDonation = '';
+  List donations = [];
+  List resourcesHelp = [];
 
   Future<void> getDocument() async{
     DocumentSnapshot disasterDocument = await firestore.collection("disasters").doc(widget.documentId).get();
@@ -241,25 +241,6 @@ class _DetailDisasterState extends State<DetailDisaster> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(disasterName, style: Theme.of(context).textTheme.headline5,),
-                              PopupMenuButton(
-                                color: const Color.fromARGB(255, 253, 13, 13),
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.all(Radius.circular(15.0))
-                                ),
-                                itemBuilder: (_) => [
-                                  PopupMenuItem(
-                                    onTap: () {
-                                      deleteDisaster(context);
-                                    },
-                                    child: Row(
-                                      children: const [
-                                        Icon(Icons.delete, color: Colors.white,),
-                                        Text(' Delete')
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
                             ],
                           ),
                           Text(address, style: Theme.of(context).textTheme.bodyText1?.copyWith(color: Theme.of(context).colorScheme.secondary)),
@@ -270,8 +251,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
                               Text('Deskripsi', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
                               InkWell(
                                 onTap: () {
-                                  updateStatus(status);
-                                  // updateStatus((snapshot.data as dynamic)['status']);
+                                  // updateStatus(status);
                                 },
                                 child: Label(text: status,),
                               )
@@ -633,33 +613,10 @@ class _SumberBantuanState extends State<SumberBantuan> {
   }
 }
 
-class DonasiPengguna extends StatefulWidget {
+class DonasiPengguna extends StatelessWidget {
   final String? documentId;
 
   const DonasiPengguna({ Key? key, this.documentId }) : super(key: key);
-
-  @override
-  State<DonasiPengguna> createState() => _DonasiPenggunaState();
-}
-
-class _DonasiPenggunaState extends State<DonasiPengguna> {
-  String accountName = '';
-  String donationAmount = '';
-
-
-  Future<void> getDonationDocument() async{
-    DocumentSnapshot disasterDocument = await firestore.collection("donations").doc(widget.documentId).get();
-    setState(() {
-      accountName = (disasterDocument.data() as dynamic)['accountName']; 
-      donationAmount = (disasterDocument.data() as dynamic)['donationAmount'].toString();
-    });
-  }
-  
-  @override
-  void initState() {
-    getDonationDocument();
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -675,7 +632,7 @@ class _DonasiPenggunaState extends State<DonasiPengguna> {
       child: StreamBuilder(
         stream: firestore
           .collection('donations')
-          .doc(widget.documentId)
+          .doc(documentId)
           .snapshots(),
         builder: (context, snapshot) {
           if(snapshot.hasData) {
@@ -684,7 +641,7 @@ class _DonasiPenggunaState extends State<DonasiPengguna> {
                 Container(
                   alignment: Alignment.topLeft,
                   child: Text(
-                    accountName,
+                    (snapshot.data as dynamic)['accountName'],
                     style: Theme.of(context).textTheme.subtitle1?.copyWith(
                         color: Theme.of(context).colorScheme.surface),
                   ),
@@ -695,7 +652,7 @@ class _DonasiPenggunaState extends State<DonasiPengguna> {
                     Container(
                       alignment: Alignment.topLeft,
                       child: Text(
-                        'Rp.' + donationAmount,
+                        'Rp.' + (snapshot.data as dynamic)['donationAmount'].toString(),
                         style: Theme.of(context).textTheme.caption?.copyWith(
                             color: Theme.of(context).colorScheme.secondary),
                       ),

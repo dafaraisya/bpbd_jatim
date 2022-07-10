@@ -105,13 +105,20 @@ class _DashboardState extends State<Dashboard> {
       );
 
   Widget _getScreen(index) {
-    if(globals.isAdmin) {
+    if(globals.privilege == 'admin') {
       if (index == 1) {
         return const Home();
       } else if (index == 2) {
         return const Profile();
       }
       return const AppData();
+    } else if (globals.privilege == 'user') {
+      if (index == 1) {
+        return const Home();
+      } else if (index == 2) {
+        return const Profile();
+      }
+      return HistoryDonation(userId: user['id'],);
     } else {
       if (index == 1) {
         return const Home();
@@ -137,7 +144,7 @@ class _DashboardState extends State<Dashboard> {
           showUnselectedLabels: false,
           currentIndex: _selectedIndex,
           backgroundColor: Theme.of(context).colorScheme.primary,
-          items: globals.isAdmin ? 
+          items: globals.privilege == 'admin' ? 
           <BottomNavigationBarItem>[
             BottomNavigationBarItem(icon: _buildIcon('Data', 0), label: ''),
             BottomNavigationBarItem(icon: _buildIcon('Home', 1), label: ''),

@@ -1,5 +1,8 @@
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:path/path.dart';
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/screens/user/donation/finalization.dart';
 import 'package:bpbd_jatim/models/user.dart';
@@ -8,11 +11,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../../data/payment_list.dart';
 
 class Confirmation extends StatefulWidget {
-  final PaymentList paymentMethod;
   final String? disasterId;
   final String? disasterName;
   final int? donationAmount;
@@ -20,7 +23,6 @@ class Confirmation extends StatefulWidget {
 
   const Confirmation({
     Key? key, 
-    this.paymentMethod = PaymentList.linkAja,
     this.disasterId,
     this.disasterName,
     this.donationAmount,
@@ -33,6 +35,8 @@ class Confirmation extends StatefulWidget {
 
 class _ConfirmationState extends State<Confirmation> {
   User? user;
+  String imageText = 'Klik untuk Upload Bukti Pembayaran';
+  File? imageFile;
 
   getSharedPreferences() async {
     SharedPreferences preferences = await SharedPreferences.getInstance();
@@ -54,55 +58,86 @@ class _ConfirmationState extends State<Confirmation> {
       (DocumentSnapshot doc) {
         dataDisaster = doc.data() as Map<String, dynamic>;
       },
-      onError: (e) => print("Error getting document: $e"),
+      onError: (e) => EasyLoading.showInfo(e),
     );
   }
 
-  Future<void> updateDisasterDonation(String documentId) async {
-    await getDisasterData();
-    int totalDonation = dataDisaster!['totalDonation'] + widget.donationAmount;
-    FirebaseFirestore.instance
-      .collection("disasters")
-      .doc(widget.disasterId)
-      .update({
-        'disasterName': dataDisaster!['disasterName'],
-        'address': dataDisaster!['address'],
-        'date': dataDisaster!['date'],
-        'timeHour': dataDisaster!['timeHour'],
-        'description': dataDisaster!['description'],
-        'status': dataDisaster!['status'],
-        'disasterImage' : dataDisaster!['disasterImage'],
-        'disasterCategory' : dataDisaster!['disasterCategory'],
-        'donations' : FieldValue.arrayUnion([documentId]),
-        'resourcesHelp' : dataDisaster!['resourcesHelp'],
-        'totalDonation' : totalDonation
-      }).then((value) {
-        Navigator.push(context, MaterialPageRoute(builder: (_) => const Finalization()));
-      }).catchError((error) => print("Failed : $error"));
-  }
+  // Future<void> updateDisasterDonation(String documentId) async {
+  //   await getDisasterData();
+  //   int totalDonation = dataDisaster!['totalDonation'] + widget.donationAmount;
+  //   FirebaseFirestore.instance
+  //     .collection("disasters")
+  //     .doc(widget.disasterId)
+  //     .update({
+  //       'disasterName': dataDisaster!['disasterName'],
+  //       'address': dataDisaster!['address'],
+  //       'date': dataDisaster!['date'],
+  //       'timeHour': dataDisaster!['timeHour'],
+  //       'description': dataDisaster!['description'],
+  //       'status': dataDisaster!['status'],
+  //       'disasterImage' : dataDisaster!['disasterImage'],
+  //       'disasterCategory' : dataDisaster!['disasterCategory'],
+  //       'donations' : FieldValue.arrayUnion([documentId]),
+  //       'resourcesHelp' : dataDisaster!['resourcesHelp'],
+  //       'totalDonation' : totalDonation
+  //     }).then((value) {
+  //       Navigator.push(context, MaterialPageRoute(builder: (_) => const Finalization()));
+  //     }).catchError((error) => EasyLoading.showInfo('Failed'));
+  // }
 
   Future<void> createDonation(BuildContext context) async {
-    // final donationProvider = DonationProvider();
-    // print(donationProvider.disasterName);
-    // print(donationProvider.accountId);
-    // print(donationProvider.accountName);
-    // print(donationProvider.donationAmount);
-    // print(donationProvider.note);
     try {
       await FirebaseFirestore.instance.collection('donations').add({
+        'disasterId': widget.disasterId,
         'disasterName': widget.disasterName,
         'accountId' : user!.id,
         'accountName' : user!.username,
         'donationAmount' : widget.donationAmount,
         'date' : Timestamp.now(),
-        'note' : widget.note
+        'note' : widget.note,
+        'status' : 'Waiting Verification'
       }).then((value) async {
-        updateDisasterDonation(value.id);
+        uploadPhoto(imageFile!, value.id, context);
+        // updateDisasterDonation(value.id);
+        
       });
     } catch (_) {
       EasyLoading.showInfo('Failed');
       return;
     }
+  }
+
+  Future uploadPhoto(File imageFile, String donationId, BuildContext context) async {
+      String fileName = basename(imageFile.path);
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child(fileName + DateTime.now().toString());
+      UploadTask uploadTask = ref.putFile(imageFile);
+      await uploadTask.whenComplete(() {
+        ref.getDownloadURL().then((fileUrl){
+          FirebaseFirestore.instance
+          .collection('donations').doc(donationId).update({
+            'donationImage' : fileUrl
+          })
+          .then((value) {
+            EasyLoading.showSuccess('Success');
+            Navigator.push(context, MaterialPageRoute(builder: (_) => const Finalization()));
+          })
+          .catchError((error) {
+            EasyLoading.showSuccess('Failed');
+          });
+        });
+      });
+    }
+
+  Future pickImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
+    setState(() {
+      if (pickedFile != null) {
+        imageFile = File(pickedFile.path);
+        imageText = basename(imageFile!.path);
+      }
+    });
+    return imageFile;
   }
 
   @override
@@ -119,7 +154,7 @@ class _ConfirmationState extends State<Confirmation> {
             children: [
               InkWell(
                 onTap: () {
-                  
+                  Navigator.pop(context);
                 },
                 child: SvgPicture.asset("assets/icons/back_black.svg"),
               ),
@@ -135,67 +170,74 @@ class _ConfirmationState extends State<Confirmation> {
           ),
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30),
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(top: 30),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset('assets/images/' + getAsset(widget.paymentMethod)),
-                  const SizedBox(width: 10),
-                  Text(
-                    '( Dicek Otomatis )',
-                    style: Theme.of(context).textTheme.bodyText1,
-                  ),
-                ],
-              ),
-              Container(
-                height: 1,
-                width: double.infinity,
-                margin: const EdgeInsets.symmetric(vertical: 5),
-                color: Colors.black,
-              ),
-              Text(
-                'No. e-wallet',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              const SizedBox(height: 12),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    '087861130080',
-                    style: Theme.of(context).textTheme.headline5?.copyWith(
-                          color: Theme.of(context).colorScheme.primary,
-                        ),
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Clipboard.setData(
-                          const ClipboardData(text: '087861130080'));
-                    },
-                    child: Text(
-                      'Salin',
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                            color: const Color(0xFF00B8D1),
+          padding: const EdgeInsets.symmetric(horizontal: 30),
+          child: Padding(
+            padding: const EdgeInsets.only(top: 30),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('Upload Bukti Pembayaran', style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold
+                ),),
+                const SizedBox(height: 20,),
+                imageFile != null ? 
+                Image.file(
+                  imageFile! ,
+                  fit: BoxFit.cover,
+                ) : Container(),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 18),
+                  width: MediaQuery.of(context).size.width,
+                  child: ElevatedButton(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            imageText,
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(color: Color(0xff686868), fontSize: 16),
                           ),
+                        )
+                      ],
                     ),
+                    style: ButtonStyle(
+                      elevation: MaterialStateProperty.all(0),
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(4),
+                              side: BorderSide(color: const Color(0xFFC4C4C4).withOpacity(0.25)))),
+                      padding: MaterialStateProperty.all(
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+                      backgroundColor: MaterialStateProperty.all(const Color(0xFFC4C4C4).withOpacity(0.25)),
+                      textStyle: MaterialStateProperty.all(
+                        const TextStyle(fontWeight: FontWeight.w400,),
+                      )
+                    ),
+                    onPressed: () async{
+                      await pickImage(ImageSource.gallery);
+                    },
                   ),
-                ],
-              ),
-              const SizedBox(height: 60),
-              Button(
-                press: () {
-                  createDonation(context);
-                  // Provider.of<DonationProvider>(context, listen: false).changeIndex(3);
-                },
-                text: 'Konfirmasi',
-              ),
-            ],
+                ),
+                Container(
+                  height: 1,
+                  width: double.infinity,
+                  margin: const EdgeInsets.symmetric(vertical: 5),
+                  color: Colors.black,
+                ),
+                const SizedBox(height: 30),
+                Button(
+                  press: () {
+                    createDonation(context);
+                    // Provider.of<DonationProvider>(context, listen: false).changeIndex(3);
+                  },
+                  text: 'Konfirmasi',
+                ),
+                const SizedBox(height: 30),
+              ],
+            ),
           ),
         ),
       ),

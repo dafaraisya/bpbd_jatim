@@ -2,7 +2,9 @@ import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/components/app_grid.dart';
 import 'package:bpbd_jatim/screens/admin/account_data.dart';
 import 'package:bpbd_jatim/screens/admin/disaster_data.dart';
+import 'package:bpbd_jatim/screens/admin/donation_data.dart';
 import 'package:bpbd_jatim/screens/admin/resource_data.dart';
+import 'package:bpbd_jatim/screens/admin/resources_help.dart';
 import 'package:flutter/material.dart';
 
 class AppData extends StatelessWidget {
@@ -56,6 +58,22 @@ class AppData extends StatelessWidget {
                       date: "",
                       onTap: () => {
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const AccountData()))
+                      }),
+                  AppCard(
+                      imageUrl: "https://firebasestorage.googleapis.com/v0/b/bpbd-jatim.appspot.com/o/sumber_bantuan_thumb.jpg?alt=media&token=4bd3b144-fdd5-45f2-9a86-0872f615f409",
+                      title: "Data Sumber Bantuan",
+                      street: "Daftar semua sumber bantuan",
+                      date: "",
+                      onTap: () => {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ResourcesHelp()))
+                      }),
+                  AppCard(
+                      imageUrl: "https://firebasestorage.googleapis.com/v0/b/bpbd-jatim.appspot.com/o/donasi_thumb.jpg?alt=media&token=f1c02a4e-e70a-4a07-9b3b-4fdd61001f91",
+                      title: "Data Donasi",
+                      street: "Daftar semua donasi",
+                      date: "",
+                      onTap: () => {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const DonationData()))
                       }),
                 ]),
               ]),

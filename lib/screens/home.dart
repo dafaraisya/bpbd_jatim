@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:bpbd_jatim/components/app_card.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
+import 'package:bpbd_jatim/screens/instansi/detail_disaster.dart';
 import 'package:bpbd_jatim/screens/user/detail_disaster_user.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -29,9 +30,11 @@ class _HomeState extends State<Home> {
       setState((){
         user = preferences.getString('user') != null ? jsonDecode(preferences.getString("user")!) : null;
         if(user['privilege'] == 'admin') {
-          globals.isAdmin = true;
+          globals.privilege = 'admin';
+        } else if(user['privilege'] == 'user'){
+          globals.privilege = 'user';
         } else {
-          globals.isAdmin = false;
+          globals.privilege = 'instansi';
         }
       });
     }
@@ -282,6 +285,7 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   late GoogleMapController mapController;
+  final List<Marker> _markers = [];
 
   final LatLng _center = const LatLng(-7.256673058845434, 112.75218079053529);
 
@@ -289,13 +293,47 @@ class _MapViewState extends State<MapView> {
     mapController = controller;
   }
 
+  Future<void> setMarkers() async {
+    QuerySnapshot allDisasterData = await FirebaseFirestore.instance.collection('disasters').get();
+    for(int i = 0; i < allDisasterData.docs.length; i++) {
+      setState(() {
+        _markers.add(Marker(
+          markerId: MarkerId('_markerId' + i.toString()),
+          position: LatLng(allDisasterData.docs[i]["latitude"], allDisasterData.docs[i]["longitude"]),
+          infoWindow: InfoWindow(
+            title: allDisasterData.docs[i]["disasterName"],
+          ),
+          icon: BitmapDescriptor.defaultMarker,
+          // onTap: () {
+          //   if(globals.privilege == 'admin') {
+          //     Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(
+          //       documentId: allDisasterData.docs[i].id
+          //     )));
+          //   } else if(globals.privilege == 'user'){
+          //     Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterUser(documentId: allDisasterData.docs[i].id)));
+          //   } else {
+          //     Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterInstansi(documentId: allDisasterData.docs[i].id)));
+          //   }
+          // }
+        ));
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    setMarkers();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return GoogleMap(
+      markers: _markers.map((e) => e).toSet(),
       onMapCreated: _onMapCreated,
       initialCameraPosition: CameraPosition(
         target: _center,
-        zoom: 12.0,
+        zoom: 11.0,
       ),
     );
   }
@@ -343,12 +381,14 @@ class DisasterDataList extends StatelessWidget {
                   street:  snapshot.data!.docs[index]["address"],
                   date: formattedDate(snapshot.data!.docs[index]["date"]),
                   onTap: () {
-                    if(globals.isAdmin) {
+                    if(globals.privilege == 'admin') {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(
                         documentId: snapshot.data!.docs[index].id
                       )));
-                    } else {
+                    } else if(globals.privilege == 'user'){
                       Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterUser(documentId: snapshot.data!.docs[index].id)));
+                    } else {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterInstansi(documentId: snapshot.data!.docs[index].id)));
                     }
                   },
                 );

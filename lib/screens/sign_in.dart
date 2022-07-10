@@ -48,13 +48,19 @@ class SignIn extends StatelessWidget {
       await preferences.setString('user', jsonEncode(user));
 
       if (user['privilege'] == 'admin') {
-        globals.isAdmin = true;
+        globals.privilege = 'admin';
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => const Dashboard()),
+            ModalRoute.withName('/'));
+      } else if(user['privilege'] == 'user'){
+        globals.privilege = 'user';
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (BuildContext context) => const Dashboard()),
             ModalRoute.withName('/'));
       } else {
-        globals.isAdmin = false;
+        globals.privilege = 'instansi';
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(builder: (BuildContext context) => const Dashboard()),

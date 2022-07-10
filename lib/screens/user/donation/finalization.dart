@@ -28,14 +28,6 @@ class Finalization extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Button(
-            press: () {},
-            text: 'Upload bukti transfer',
-            // isSecondary: true,
-          ),
-        ),
       ],
     );
   }

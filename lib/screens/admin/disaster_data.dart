@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:bpbd_jatim/components/app_card.dart';
@@ -5,11 +6,13 @@ import 'package:bpbd_jatim/components/app_grid.dart';
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/screens/admin/detail_disaster.dart';
 import 'package:bpbd_jatim/screens/dashboard.dart';
+import 'package:bpbd_jatim/screens/instansi/detail_disaster.dart';
 import 'package:bpbd_jatim/screens/user/detail_disaster_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -20,6 +23,9 @@ import 'package:syncfusion_flutter_xlsio/xlsio.dart' as xlsio;
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+double latitude = 0.0;
+double longitude = 0.0;
 
 class DisasterData extends StatefulWidget {
   const DisasterData({Key? key}) : super(key: key);
@@ -49,6 +55,13 @@ class _DisasterDataState extends State<DisasterData> {
   String disasterCategory = 'Pilih Kategori Bencana';
 
   List<List<String>> itemList = [];
+
+  @override
+  void initState() {
+    latitude = 0.0;
+    longitude = 0.0;
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -91,6 +104,8 @@ class _DisasterDataState extends State<DisasterData> {
           firestore.collection('disasters').doc(newDocumentId).update({
             'disasterName': disasterNameController.text,
             'address': addressController.text,
+            'latitude': latitude,
+            'longitude': longitude,
             'date': Timestamp.fromDate(date),
             'timeHour': timeHourController.text,
             'description': descriptionController.text,
@@ -117,6 +132,8 @@ class _DisasterDataState extends State<DisasterData> {
         await firestore.collection('disasters').add({
           'disasterName': disasterNameController.text,
           'address': addressController.text,
+          'latitude': latitude,
+          'longitude': longitude,
           'date': Timestamp.fromDate(date),
           'timeHour': timeHourController.text,
           'description': descriptionController.text,
@@ -128,7 +145,7 @@ class _DisasterDataState extends State<DisasterData> {
           'totalDonation' : 0
         })
         .then((value) => (uploadPhoto(imageFile!, date, value.id)))
-        .catchError((error) => print("Failed : $error"));
+        .catchError((error) => EasyLoading.showInfo("Failed"));
       } catch (_) {
         EasyLoading.showInfo('Failed');
         return;
@@ -210,10 +227,12 @@ class _DisasterDataState extends State<DisasterData> {
     }
 
     void _onTap(String documentId) {
-      if(globals.isAdmin) {
+      if(globals.privilege == 'admin') {
         Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisaster(documentId: documentId)));
-      } else {
+      } else if (globals.privilege == 'user') {
         Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterUser(documentId: documentId)));
+      } else {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => DetailDisasterInstansi(documentId: documentId)));
       }
     }
 
@@ -480,6 +499,37 @@ class _DisasterDataState extends State<DisasterData> {
                           ),
                           Container(
                             margin: const EdgeInsets.only(bottom: 18),
+                            width: MediaQuery.of(context).size.width,
+                            child: ElevatedButton(
+                              child: Row(
+                                children:[
+                                  Text(
+                                    latitude == 0.0 ? 'Choose Location' : latitude.toString() + longitude.toString(),
+                                    textAlign: TextAlign.left,
+                                    style: TextStyle(color: Color(0xff686868), fontSize: 16),
+                                  ),
+                                ],
+                              ),
+                              style: ButtonStyle(
+                                elevation: MaterialStateProperty.all(0),
+                                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4),
+                                        side: BorderSide(color: const Color(0xFFC4C4C4).withOpacity(0.25)))),
+                                padding: MaterialStateProperty.all(
+                                  const EdgeInsets.symmetric(horizontal: 20, vertical: 20)),
+                                backgroundColor: MaterialStateProperty.all(const Color(0xFFC4C4C4).withOpacity(0.25)),
+                                textStyle: MaterialStateProperty.all(
+                                  const TextStyle(fontWeight: FontWeight.w400,),
+                                )
+                              ),
+                              onPressed: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (_) => const PickLocation()));
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(bottom: 18),
                             child: TextField(
                               autofocus: true,
                               style: const TextStyle(color: Colors.black),
@@ -579,13 +629,81 @@ class _DisasterDataState extends State<DisasterData> {
   }
 }
 
-class PickLocation extends StatelessWidget {
+class PickLocation extends StatefulWidget {
   const PickLocation({ Key? key }) : super(key: key);
 
   @override
+  State<PickLocation> createState() => _PickLocationState();
+}
+
+class _PickLocationState extends State<PickLocation> {
+  final Completer<GoogleMapController> _controller = Completer();
+  final Set<Marker> _markers = {};
+
+  static const CameraPosition _kGooglePlex = CameraPosition(
+    target: LatLng(-7.248647582171617, 112.75179487496213),
+    zoom: 14.4746,
+  );
+
+  static final Marker _kGooglePlexMarker = Marker(
+    markerId: MarkerId('_kGooglePlex'),
+    infoWindow: InfoWindow(title: 'Google Plex'),
+    icon: BitmapDescriptor.defaultMarker,
+    position: LatLng(latitude, longitude)
+  );
+
+  static const CameraPosition _kLake = CameraPosition(
+    bearing: 192.8334901395799,
+    target: LatLng(-7.251930227134496, 112.75245669561924),
+    tilt: 59.440717697143555,
+    zoom: 19.151926040649414
+  );
+
+
+  void _onAddMarkerButtonPressed(LatLng latlang) {
+    // loadAddress(latlang);
+    // _latLng = latlang;
+    setState(() {
+      _markers.add(Marker(
+        markerId: const MarkerId('_disasterLocation'),
+        position: latlang,
+        infoWindow: const InfoWindow(
+          title: 'location that you choose',
+        ),
+        icon: BitmapDescriptor.defaultMarker,
+      ));
+      latitude = latlang.latitude;
+      longitude = latlang.longitude;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Container(
-      
+    return Scaffold(
+      body: GoogleMap(
+        markers: _markers,
+        mapType: MapType.normal,
+        initialCameraPosition: _kGooglePlex,
+        onMapCreated: (GoogleMapController controller) {
+          _controller.complete(controller);
+        },
+        onTap: (latlang){
+          if(_markers.length>=1)
+            {
+              _markers.clear();
+            }
+
+          _onAddMarkerButtonPressed(latlang);
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.orange,
+        onPressed: () => {
+          Navigator.pop(context)
+        },
+        label: const Text('Choose Location!'),
+        icon: const Icon(Icons.location_on),
+      ),
     );
   }
 }

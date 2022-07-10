@@ -59,7 +59,7 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       body: Column(
         children: [
-          globals.isAdmin ? Container(
+          globals.privilege == 'admin' ? Container(
             padding: const EdgeInsets.only(top: 100),
             alignment: Alignment.center,
             child: adminProfilePic()
@@ -68,7 +68,7 @@ class _ProfileState extends State<Profile> {
             alignment: Alignment.center,
             child: userProfilePic()
           ),
-          globals.isAdmin ? Padding(
+          globals.privilege == 'admin' ? Padding(
             padding: const EdgeInsets.only(top: 18),
             child: Text(
               user != null ? user['username'] : 'Memuat...',
@@ -87,7 +87,7 @@ class _ProfileState extends State<Profile> {
                 color: Colors.black),
             ),
           ),
-          globals.isAdmin ? Align(
+          globals.privilege == 'admin' ? Align(
             alignment: Alignment.center,
             child: Text(
               user != null ? user['privilege'] : 'Memuat...',

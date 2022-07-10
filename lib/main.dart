@@ -34,9 +34,11 @@ class _MyAppState extends State<MyApp> {
       setState((){
         user = preferences.getString('user') != null ? jsonDecode(preferences.getString("user")!) : null;
         if(user['privilege'] == 'admin') {
-          globals.isAdmin = true;
+          globals.privilege = 'admin';
+        } else if(user['privilege'] == 'user'){
+          globals.privilege = 'user';
         } else {
-          globals.isAdmin = false;
+          globals.privilege = 'instansi';
         }
       });
     }

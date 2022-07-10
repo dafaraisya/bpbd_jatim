@@ -123,6 +123,19 @@ class DetailDisasterUser extends StatelessWidget {
                             Text('Data tidak ditemukan', textAlign: TextAlign.center, style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary))
                           ),
                           const SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Donasi Pengguna', style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.secondary)),
+                              Text('Rp.' + (snapshot.data as dynamic)['totalDonation'].toString(), style: Theme.of(context).textTheme.subtitle2?.copyWith(color: Theme.of(context).colorScheme.primary)),
+                            ],
+                          ),
+                          const SizedBox(height: 10,),
+                          Column(
+                            children: List.generate((snapshot.data as dynamic)['donations'].length, (index) => DonasiPengguna(
+                              documentId: (snapshot.data as dynamic)['donations'][index],
+                            )),
+                          ),
                           Button(
                             press: () {
                               // Navigator.push(context, MaterialPageRoute(builder: (_) => DonationDashboard(documentId: documentId, disasterName: (snapshot.data as dynamic)['disasterName'],)));

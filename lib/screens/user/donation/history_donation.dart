@@ -1,3 +1,4 @@
+import 'package:bpbd_jatim/components/label_verify.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -29,20 +30,25 @@ class HistoryDonation extends StatelessWidget {
               child: StreamBuilder(
                 stream: FirebaseFirestore.instance
                   .collection('donations')
-                  .where(userId!)
+                  .where('accountId', isEqualTo: userId)
                   .snapshots(),
                 builder: (context, AsyncSnapshot<QuerySnapshot>snapshot) {
                   if(snapshot.hasData) {
-                    return ListView.builder(
-                      itemCount: snapshot.data!.docs.length,
-                      itemBuilder: (context, index) {
-                        return DonationCard(
-                          disasterName: snapshot.data!.docs[index]['disasterName'],
-                          donationAmount: snapshot.data!.docs[index]['donationAmount'],
-                          date: snapshot.data!.docs[index]['date'],
-                        );
-                      },
-                    );
+                    if(snapshot.data!.docs.length > 0) {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.docs.length,
+                        itemBuilder: (context, index) {
+                          return DonationCard(
+                            disasterName: snapshot.data!.docs[index]['disasterName'],
+                            status: snapshot.data!.docs[index]['status'],
+                            donationAmount: snapshot.data!.docs[index]['donationAmount'],
+                            date: snapshot.data!.docs[index]['date'],
+                          );
+                        },
+                      );
+                    } else {
+                      return const Text('Data tidak ditemukan');    
+                    }
                   }
                   return const Text('Data tidak ditemukan');
                 },
@@ -57,12 +63,14 @@ class HistoryDonation extends StatelessWidget {
 
 class DonationCard extends StatelessWidget {
   final String? disasterName;
+  final String? status;
   final int? donationAmount;
   final Timestamp? date;
 
   const DonationCard({
     Key? key,
     this.disasterName,
+    this.status,
     this.donationAmount,
     this.date
   }) : super(key: key);
@@ -95,8 +103,11 @@ class DonationCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(disasterName!,
-              style: Theme.of(context).textTheme.headline6),
+          Row(
+            children: [
+              Text(disasterName!, style: Theme.of(context).textTheme.headline6),
+            ],
+          ),
           Container(
             margin: const EdgeInsets.only(top: 8.0),
             child: Row(
@@ -116,7 +127,11 @@ class DonationCard extends StatelessWidget {
                 )
               ],
             ),
-          )
+          ),
+          Container(
+            margin: const EdgeInsets.only(top: 8.0),
+            child: LabelVerify(text: status,)
+          ),
         ],
       ),
     );
