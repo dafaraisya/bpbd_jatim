@@ -45,7 +45,6 @@ class _DonationDashboardState extends State<DonationDashboard> {
     Provider.of<DonationProvider>(context, listen: false).changeDisasterName(widget.disasterName);
     Provider.of<DonationProvider>(context, listen: false).changeAccountName(username);
     Provider.of<DonationProvider>(context, listen: false).changeAccountId(userId);
-    print(donationProvider.accountId);
   }
 
   @override

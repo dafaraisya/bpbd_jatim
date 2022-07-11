@@ -217,7 +217,7 @@ class _DisasterDataState extends State<DisasterData> {
           await directory.create(recursive: true);
         }
       } catch(e) {
-        print(e);
+        EasyLoading.showInfo('Failed');
       }
 
       final File file = File(directory!.path+"/data_bencana.xlsx");
@@ -506,7 +506,7 @@ class _DisasterDataState extends State<DisasterData> {
                                   Text(
                                     latitude == 0.0 ? 'Choose Location' : latitude.toString() + longitude.toString(),
                                     textAlign: TextAlign.left,
-                                    style: TextStyle(color: Color(0xff686868), fontSize: 16),
+                                    style: const TextStyle(color: Color(0xff686868), fontSize: 16),
                                   ),
                                 ],
                               ),
@@ -644,21 +644,6 @@ class _PickLocationState extends State<PickLocation> {
     target: LatLng(-7.248647582171617, 112.75179487496213),
     zoom: 14.4746,
   );
-
-  static final Marker _kGooglePlexMarker = Marker(
-    markerId: MarkerId('_kGooglePlex'),
-    infoWindow: InfoWindow(title: 'Google Plex'),
-    icon: BitmapDescriptor.defaultMarker,
-    position: LatLng(latitude, longitude)
-  );
-
-  static const CameraPosition _kLake = CameraPosition(
-    bearing: 192.8334901395799,
-    target: LatLng(-7.251930227134496, 112.75245669561924),
-    tilt: 59.440717697143555,
-    zoom: 19.151926040649414
-  );
-
 
   void _onAddMarkerButtonPressed(LatLng latlang) {
     // loadAddress(latlang);

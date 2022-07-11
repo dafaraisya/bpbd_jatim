@@ -8,12 +8,10 @@ import 'package:bpbd_jatim/screens/user/donation/finalization.dart';
 import 'package:bpbd_jatim/models/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../../data/payment_list.dart';
 
 class Confirmation extends StatefulWidget {
   final String? disasterId;

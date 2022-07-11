@@ -12,10 +12,6 @@ class AppData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void _onTap() {
-      Navigator.push(context, MaterialPageRoute(builder: (_) => const DisasterData()));
-    }
-
     return Scaffold(
       body: SafeArea(
           child: Padding(

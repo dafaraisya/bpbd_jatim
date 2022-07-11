@@ -92,7 +92,7 @@ class SignIn extends StatelessWidget {
                     Container(
                         alignment: Alignment.topLeft,
                         padding: const EdgeInsets.all(10),
-                        child: Text('signIn',
+                        child: Text('Sign In',
                             style: Theme.of(context)
                                 .textTheme
                                 .headline4

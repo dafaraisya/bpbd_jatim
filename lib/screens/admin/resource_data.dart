@@ -60,7 +60,9 @@ class _ResourceDataState extends State<ResourceData> {
             _pc1.close();
             Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
           })
-          .catchError((error) => print("Failed : $error"));
+          .catchError((error) {
+            EasyLoading.showInfo("Failed");
+          });
         });
       });
     }

@@ -1,5 +1,4 @@
 import 'package:bpbd_jatim/components/button.dart';
-import 'package:bpbd_jatim/screens/user/donation/checkout.dart';
 import 'package:bpbd_jatim/screens/user/donation/confirmation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
