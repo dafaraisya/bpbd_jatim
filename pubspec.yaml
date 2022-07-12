@@ -52,11 +52,13 @@ dependencies:
   cloud_firestore: 
   flutter_local_notifications:
   flutter_easyloading:
+  email_auth: ^0.0.1
   # excel: 
   path_provider:
   permission_handler:
   syncfusion_flutter_xlsio: 
   open_file: 
+  http: ^0.13.4
 
 dev_dependencies:
   flutter_test:

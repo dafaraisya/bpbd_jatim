@@ -1,10 +1,16 @@
+import 'dart:convert';
+
+import 'package:bpbd_jatim/screens/verify_otp.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:bpbd_jatim/components/button.dart';
 import 'package:bpbd_jatim/screens/sign_in.dart';
-import 'package:bpbd_jatim/screens/sign_up_verified.dart';
+import 'package:email_auth/email_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
+import 'dart:math';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -30,6 +36,50 @@ class _SignUpState extends State<SignUp> {
   String? roleCategory = 'Pilih Role User';
 
   int width = 0; 
+
+  Future sendEmailOTP(fromName, toName, toEmail) async{
+    const serviceId = 'service_m6nom88';
+    const templateId = 'template_m1lgcz9';
+    const userId = 'zYSAjXOegqvtH_KMk';
+
+    var rng = Random();
+    var OTPCode = rng.nextInt(900000) + 100000;
+
+    final url = Uri.parse('https://api.emailjs.com/api/v1.0/email/send');
+    final response = await http.post(
+      url,
+      headers: {
+        'origin': 'http://localhost',
+        'Content-Type': 'application/json' 
+      },
+      body: json.encode({
+        'service_id': serviceId,
+        'template_id': templateId,
+        'user_id': userId,
+        'template_params': {
+          'from_name': fromName,
+          'to_name': toName,
+          'otp_code': OTPCode,
+          'to_email': toEmail,
+        }
+      })
+    );
+
+    if(response.body == 'OK') {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => VerifyOTP(
+        username: usernameController.text,
+        agency: agencyController.text,
+        phoneNumber: phoneNumberController.text,
+        email: emailController.text,
+        password: passwordController.text,
+        privilege: roleCategory!,
+        OTPCode: OTPCode.toString()
+      )));
+    } else {
+      EasyLoading.showInfo('Failed');
+    }
+    
+  }
 
   Widget firstForm() {
     return Column(
@@ -272,53 +322,25 @@ class _SignUpState extends State<SignUp> {
                   return;
                 }
 
-                await signUp(usernameController.text, agencyController.text, phoneNumberController.text, emailController.text, roleCategory!, passwordController.text, passwordConfirmationController.text);
+                sendEmailOTP('BPBD Jatim Apps', usernameController.text, emailController.text);
               },
               text: 'Register',
             )),
       ],
     );
   }
-
-  Future<void> signUp(String username, String agency, String phoneNumber, String email, String privilege, String password, String passwordConfirmation) async {
-    if (username.isEmpty ||
-        agency.isEmpty ||
-        phoneNumber.isEmpty ||
-        email.isEmpty ||
-        privilege.isEmpty ||
-        password.isEmpty ||
-        password.isEmpty) {
-      EasyLoading.showInfo('Fill all the field!');
-      return;
-    }
-
-    if (passwordController.text != passwordConfirmationController.text) {
-      EasyLoading.showInfo("Password doesn't match!");
-      return;
-    }
-
-    try {
-      await firestore.collection('users').add({
-        'username': usernameController.text,
-        'agency': agencyController.text,
-        'phone': phoneNumberController.text,
-        'email': emailController.text,
-        'password': passwordController.text,
-        'privilege': roleCategory
-      });
-    } catch (_) {
-      EasyLoading.showInfo('Sign Up failed');
-      return;
-    }
-
-    Navigator.push(
-        context, MaterialPageRoute(builder: (_) => const SignUpVerified()));
-  }
+  late EmailAuth emailAuth;
 
   @override
   void initState() {
     super.initState();
     formBody = firstForm();
+    // emailAuth = new EmailAuth(
+    //   sessionName: "Sample session",
+    // );
+
+    /// Configuring the remote server
+    // emailAuth.config(remoteServerConfiguration);
   }
 
   @override

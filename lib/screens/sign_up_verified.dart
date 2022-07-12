@@ -19,9 +19,9 @@ class SignUpVerified extends StatelessWidget {
             children: [
               SvgPicture.asset("assets/images/sign_up_verified.svg"),
               const SizedBox(height: 30,),
-              const Text("Congratulations, you have successfully registered, please check your email to activate your account", textAlign: TextAlign.center,),
+              const Text("Congratulations, you have successfully registered", textAlign: TextAlign.center,),
               const SizedBox(height: 20,),
-              Text("send activation code again", style: TextStyle(
+              Text("please log in, by clicking the button below", style: TextStyle(
                 color: Theme.of(context).colorScheme.primary
               )),
               const SizedBox(height: 25,),
