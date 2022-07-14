@@ -189,7 +189,7 @@ class _DetailDisasterInstansiState extends State<DetailDisasterInstansi> {
   Future<void> getDocument() async{
     DocumentSnapshot disasterDocument = await firestore.collection("disasters").doc(widget.documentId).get();
     setState(() {
-      disasterImage = (disasterDocument.data() as dynamic)['disasterImage']; 
+      disasterImage = (disasterDocument.data() as dynamic)['disasterImage'][0]; 
       address = (disasterDocument.data() as dynamic)['address']; 
       date = formattedDate((disasterDocument.data() as dynamic)['date']); 
       description = (disasterDocument.data() as dynamic)['description']; 

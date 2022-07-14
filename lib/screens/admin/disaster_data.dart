@@ -39,7 +39,9 @@ class _DisasterDataState extends State<DisasterData> {
   bool birthDateFilled = false; 
   DateTime selectedBirthDate = DateTime.now();
   String imageText = 'Foto Bencana';
-  File? imageFile;
+  // File? imageFile;
+  List<XFile>? imageFileList = [];
+  List<String> imageUploadedList = [];
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
   
@@ -84,44 +86,50 @@ class _DisasterDataState extends State<DisasterData> {
     }
 
     Future pickImage(ImageSource source) async {
-      final pickedFile = await ImagePicker().pickImage(source: source);
-      setState(() {
-        if (pickedFile != null) {
-          imageFile = File(pickedFile.path);
-          imageText = basename(imageFile!.path);
-        }
+      final ImagePicker imagePicker = ImagePicker();
+      final List<XFile>? selectedImages = await imagePicker.pickMultiImage();
+      if (selectedImages!.isNotEmpty) {
+        imageFileList!.addAll(selectedImages);
+      }
+      setState((){
+        imageText = basename(imageFileList![0].path);
       });
-      return imageFile;
     }
 
-    Future uploadPhoto(File imageFile, DateTime date, String newDocumentId) async {
-      String fileName = basename(imageFile.path);
+    Future uploadPhoto(XFile imageFile, String newDocumentId, int index) async {
+      File convertedFile = File(imageFile.path);
+      String fileName = basename(convertedFile.path);
       FirebaseStorage storage = FirebaseStorage.instance;
       Reference ref = storage.ref().child(fileName + DateTime.now().toString());
-      UploadTask uploadTask = ref.putFile(imageFile);
+      UploadTask uploadTask = ref.putFile(convertedFile);
       await uploadTask.whenComplete(() {
-        ref.getDownloadURL().then((fileUrl){
-          firestore.collection('disasters').doc(newDocumentId).update({
-            'disasterName': disasterNameController.text,
-            'address': addressController.text,
-            'latitude': latitude,
-            'longitude': longitude,
-            'date': Timestamp.fromDate(date),
-            'timeHour': timeHourController.text,
-            'description': descriptionController.text,
-            'status': statusController.text,
-            'disasterImage' : fileUrl,
-            'disasterCategory' : disasterCategory,
-            'donations' : [],
-            'resourcesHelp' : [],
-            'totalDonation' : 0
-          })
-          .then((value) {
-            _pc.close();
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
-          })
-          .catchError((error) => print("Failed : $error"));
-        });
+        if(index == 0) {
+          ref.getDownloadURL().then((fileUrl){
+            firestore.collection('disasters').doc(newDocumentId).update({
+              'disasterImage' : [fileUrl],
+            })
+            .then((value) {
+              _pc.close();
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
+            })
+            .catchError((error) {
+              EasyLoading.showInfo('Failed');
+            });
+          });
+        } else {
+          ref.getDownloadURL().then((fileUrl){
+            firestore.collection('disasters').doc(newDocumentId).update({
+              'disasterImage' : FieldValue.arrayUnion([fileUrl]),
+            })
+            .then((value) {
+              _pc.close();
+              Navigator.push(context, MaterialPageRoute(builder: (_) => const Dashboard()));
+            })
+            .catchError((error) {
+              EasyLoading.showInfo('Failed');
+            });
+          });
+        }
       });
     }
     
@@ -138,14 +146,20 @@ class _DisasterDataState extends State<DisasterData> {
           'timeHour': timeHourController.text,
           'description': descriptionController.text,
           'status': statusController.text,
-          'disasterImage' : '',
+          'disasterImage' : [""],
           'disasterCategory' : disasterCategory,
           'donations' : [],
           'resourcesHelp' : [],
           'totalDonation' : 0
         })
-        .then((value) => (uploadPhoto(imageFile!, date, value.id)))
-        .catchError((error) => EasyLoading.showInfo("Failed"));
+        .then((value)  {
+          for(int i = 0; i < imageFileList!.length; i++) {
+            uploadPhoto(imageFileList![i], value.id, i);
+          }
+        })
+        .catchError((error) {
+          EasyLoading.showInfo("Failed");
+        });
       } catch (_) {
         EasyLoading.showInfo('Failed');
         return;
@@ -314,7 +328,7 @@ class _DisasterDataState extends State<DisasterData> {
                             return AppGrid(
                               widgetList: List.generate(snapshot.data!.docs.length, (index) => 
                                 AppCard(
-                                  imageUrl: snapshot.data!.docs[index]["disasterImage"],
+                                  imageUrl: snapshot.data!.docs[index]["disasterImage"][0],
                                   title: snapshot.data!.docs[index]["disasterName"],
                                   street: snapshot.data!.docs[index]["address"],
                                   date: formattedDate(snapshot.data!.docs[index]["date"]),
@@ -531,7 +545,7 @@ class _DisasterDataState extends State<DisasterData> {
                           Container(
                             margin: const EdgeInsets.only(bottom: 18),
                             child: TextField(
-                              autofocus: true,
+                              autofocus: false,
                               style: const TextStyle(color: Colors.black),
                               controller: descriptionController,
                               decoration: InputDecoration(

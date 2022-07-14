@@ -31,7 +31,7 @@ class DetailDisasterUser extends StatelessWidget {
           if(snapshot.hasData) {
             return Stack(
               children: [
-                DetailImage(imageUrl: (snapshot.data as dynamic)['disasterImage']),
+                DetailImage(imageUrl: (snapshot.data as dynamic)['disasterImage'][0]),
                 Align(
                   alignment: Alignment.bottomCenter,
                   child: Container(

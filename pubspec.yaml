@@ -59,6 +59,7 @@ dependencies:
   syncfusion_flutter_xlsio: 
   open_file: 
   http: ^0.13.4
+  carousel_slider: ^4.1.1
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +76,9 @@ dev_dependencies:
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+dependency_overrides:
+  firebase_messaging_platform_interface: 3.1.6
 
 flutter_icons:
   android: true

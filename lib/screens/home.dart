@@ -377,7 +377,7 @@ class DisasterDataList extends StatelessWidget {
               itemBuilder: (BuildContext ctx, index) {
                 return AppCard(
                   title: snapshot.data!.docs[index]["disasterName"],
-                  imageUrl: snapshot.data!.docs[index]["disasterImage"],
+                  imageUrl: snapshot.data!.docs[index]["disasterImage"][0],
                   street:  snapshot.data!.docs[index]["address"],
                   date: formattedDate(snapshot.data!.docs[index]["date"]),
                   onTap: () {

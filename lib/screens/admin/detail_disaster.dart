@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:intl/intl.dart';
+import 'package:carousel_slider/carousel_slider.dart';
 
 final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -34,7 +35,7 @@ class _DetailDisasterState extends State<DetailDisaster> {
   String? totalPersonnel;
   String status = '';
 
-  String disasterImage = '';
+  List<dynamic> disasterImage = [];
   String address = '';
   String date = '';
   String description = '';
@@ -376,10 +377,17 @@ class _DetailDisasterState extends State<DetailDisaster> {
   }
 }
 
-class DetailImage extends StatelessWidget {
-  final String? imageUrl;
+class DetailImage extends StatefulWidget {
+  final List<dynamic>? imageUrl;
 
   const DetailImage({ Key? key, this.imageUrl }) : super(key: key);
+
+  @override
+  State<DetailImage> createState() => _DetailImageState();
+}
+
+class _DetailImageState extends State<DetailImage> {
+  int currentImage = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -388,15 +396,31 @@ class DetailImage extends StatelessWidget {
         SafeArea(
           child: Stack(
             children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 270,
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(imageUrl!),
-                  ),
+              CarouselSlider.builder(
+                options: CarouselOptions(
+                  autoPlay: false,
+                  viewportFraction: 1,
+                  height: 260,
+                  enableInfiniteScroll: false,
+                  onPageChanged: (index, reason) {
+                    setState(() {
+                      currentImage = index;
+                    });
+                  }
                 ),
+                itemCount: widget.imageUrl!.isNotEmpty ? widget.imageUrl!.length : 0,
+                itemBuilder: (context, itemIndex, pageViewIndex) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 270,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(widget.imageUrl!.isNotEmpty ? widget.imageUrl![itemIndex] : ''),
+                      ),
+                    ),
+                  );
+                }
               ),
               Row(
                 children: [
@@ -413,6 +437,21 @@ class DetailImage extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: List.generate(widget.imageUrl!.length, (index) {
+                  return Container(
+                    margin: const EdgeInsets.only(top: 210, left: 2, right: 2),
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: currentImage == index ? Colors.black : Colors.grey
+                    ),
+                  );
+                }),
               ),
             ],
           ),

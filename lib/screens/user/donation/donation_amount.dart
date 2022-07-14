@@ -1,5 +1,5 @@
 import 'package:bpbd_jatim/components/button.dart';
-import 'package:bpbd_jatim/screens/user/donation/confirmation.dart';
+import 'package:bpbd_jatim/screens/user/donation/checkout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -68,16 +68,14 @@ class DonationAmount extends StatelessWidget {
               Button(
                 text: 'Lanjutkan',
                 press: () {
-                  // Provider.of<DonationProvider>(context, listen: false).changeIndex(1);
-                  // Provider.of<DonationProvider>(context, listen: false).changeDonationAmount(int.parse(amount.text));
-                  // Provider.of<DonationProvider>(context, listen: false).changeNote(note.text);
-                  // Navigator.push(context, MaterialPageRoute(builder: (_) => Checkout(
-                  //   donation: int.parse(amount.text),
+                  // Navigator.push(context, MaterialPageRoute(builder: (_) => Confirmation(
+                  //   donationAmount: int.parse(amount.text),
                   //   note: note.text,
                   //   disasterId: disasterId,
                   //   disasterName: disasterName,
                   // )));
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => Confirmation(
+
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => Checkout(
                     donationAmount: int.parse(amount.text),
                     note: note.text,
                     disasterId: disasterId,

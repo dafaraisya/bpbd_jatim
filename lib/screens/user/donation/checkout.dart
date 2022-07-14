@@ -6,17 +6,17 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../../../components/app_radio_button.dart';
 
 class Checkout extends StatefulWidget {
-  final int? donation;
-  final String? note;
   final String? disasterId;
   final String? disasterName;
+  final int? donationAmount;
+  final String? note;
 
   const Checkout({
     Key? key,
-    this.donation,
-    this.note,
     this.disasterId,
-    this.disasterName
+    this.disasterName,
+    this.donationAmount,
+    this.note
   }) : super(key: key);
 
   @override
@@ -47,7 +47,7 @@ class _CheckoutState extends State<Checkout> {
               Container(
                 margin: const EdgeInsets.only(left: 16.0),
                 child: Text(
-                  'Donasi',
+                  'Checkout',
                   style: Theme.of(context).textTheme.headline5?.copyWith(
                       color: Theme.of(context).colorScheme.surface),
                 ),
@@ -73,7 +73,7 @@ class _CheckoutState extends State<Checkout> {
                         ?.copyWith(color: Theme.of(context).colorScheme.surface),
                   ),
                   Text(
-                    "Rp. 100.000",
+                    "Rp. " + widget.donationAmount.toString(),
                     style: Theme.of(context)
                         .textTheme
                         .bodyText1
@@ -195,9 +195,8 @@ class _CheckoutState extends State<Checkout> {
             ),
             Button(
               press: () {
-                // Provider.of<DonationProvider>(context, listen: false).changeIndex(2);
                 Navigator.push(context, MaterialPageRoute(builder: (_) => Confirmation(
-                  donationAmount: widget.donation,
+                  donationAmount: widget.donationAmount,
                   note: widget.note,
                   disasterId: widget.disasterId,
                   disasterName: widget.disasterName,
